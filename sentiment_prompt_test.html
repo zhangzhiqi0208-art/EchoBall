@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情感分析Prompt测试</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        .success { 
+            color: #4CAF50; 
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .error { 
+            color: #f44336; 
+            font-weight: bold;
+        }
+        button { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success-result {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
+        }
+        .error-result {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        .info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196F3;
+        }
+        .prompt-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .prompt-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        .old-prompt {
+            border-color: #ff9800;
+        }
+        .new-prompt {
+            border-color: #4CAF50;
+        }
+        .json-format {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 情感分析Prompt优化测试</h1>
+        
+        <div class="test-section">
+            <h2>✅ 情感分析Prompt已优化</h2>
+            <p>用户原声清洗的情感分析部分已使用更完善的prompt：</p>
+            <ul class="feature-list">
+                <li>更详细的JSON输出格式</li>
+                <li>增加置信度评估</li>
+                <li>提供分析依据列表</li>
+                <li>更精确的情感强度分类</li>
+                <li>更清晰的判断标准</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 Prompt对比</h2>
+            <div class="prompt-comparison">
+                <div class="prompt-card old-prompt">
+                    <h3>🔴 旧Prompt格式</h3>
+                    <div class="json-format">{
+    "sentiment_classification": "正向/负向/中性",
+    "sentiment_intensity": "强烈/中等/轻微",
+    "sentiment_analysis": "详细的情感分析说明"
+}</div>
+                    <p><strong>特点：</strong></p>
+                    <ul>
+                        <li>基础的情感分类</li>
+                        <li>简单的强度评估</li>
+                        <li>单一分析说明</li>
+                    </ul>
+                </div>
+                
+                <div class="prompt-card new-prompt">
+                    <h3>🟢 新Prompt格式</h3>
+                    <div class="json-format">{
+    "sentiment_type": "positive/negative/neutral",
+    "confidence_level": "high/medium/low", 
+    "reasons": ["原因1", "原因2", "原因3"],
+    "intensity": "mild/moderate/strong"
+}</div>
+                    <p><strong>特点：</strong></p>
+                    <ul>
+                        <li>英文标准分类</li>
+                        <li>置信度评估</li>
+                        <li>多维度分析依据</li>
+                        <li>更精确的强度分级</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 新Prompt优势</h2>
+            <div class="prompt-comparison">
+                <div class="prompt-card">
+                    <h3>🎯 更精确的分类</h3>
+                    <ul>
+                        <li><strong>sentiment_type</strong>：使用国际标准positive/negative/neutral</li>
+                        <li><strong>confidence_level</strong>：评估分析的可信度</li>
+                        <li><strong>reasons</strong>：提供具体的分析依据</li>
+                        <li><strong>intensity</strong>：更细致的强度分级</li>
+                    </ul>
+                </div>
+                
+                <div class="prompt-card">
+                    <h3>🔍 更详细的分析</h3>
+                    <ul>
+                        <li><strong>多维度评估</strong>：情感类型+置信度+依据+强度</li>
+                        <li><strong>结构化输出</strong>：便于程序解析和处理</li>
+                        <li><strong>可追溯性</strong>：提供分析依据列表</li>
+                        <li><strong>标准化</strong>：使用国际通用的情感分析标准</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 功能测试</h2>
+            <p>请按以下步骤测试新的情感分析prompt：</p>
+            <ol>
+                <li>访问主页面：<code>http://localhost:3000/index.html</code></li>
+                <li>点击"用户原声清洗模板"标签</li>
+                <li>输入不同情感倾向的西班牙语内容</li>
+                <li>选择源语言：西语</li>
+                <li>选择目标语言：中文</li>
+                <li>点击"一键转化"</li>
+                <li>查看情感分析是否显示更详细的信息</li>
+            </ol>
+            
+            <button onclick="testSentimentPrompt()">测试情感分析Prompt</button>
+            <div id="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📈 预期改进效果</h2>
+            <p>使用新prompt后，情感分析将提供：</p>
+            <ul class="feature-list">
+                <li>更准确的情感分类（positive/negative/neutral）</li>
+                <li>置信度评估（high/medium/low）</li>
+                <li>具体的分析依据列表</li>
+                <li>更精确的情感强度（mild/moderate/strong）</li>
+                <li>更详细的情感分析说明</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 技术实现</h2>
+            <p>✅ 后端prompt函数已更新为更完善的版本</p>
+            <p>✅ JSON解析逻辑已适配新的输出格式</p>
+            <p>✅ 中英文映射已配置完成</p>
+            <p>✅ 错误处理机制已更新</p>
+            <p>✅ 前端显示逻辑保持不变，确保兼容性</p>
+        </div>
+    </div>
+
+    <script>
+        async function testSentimentPrompt() {
+            const result = document.getElementById('test-result');
+            result.innerHTML = '<div class="result info">🔄 正在测试新的情感分析prompt...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('user_input', 'No asignan con prontitud las ordenes a los repartidores');
+                formData.append('source_language', '西语');
+                formData.append('target_language', '中文');
+                formData.append('user_id', 'test_user');
+                
+                const response = await fetch('http://localhost:8001/api/original-sound/process-text', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API调用失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="result success-result">
+                            ✅ 情感分析Prompt测试成功！<br><br>
+                            <strong>情感分析结果：</strong><br>
+                            • 情感分类：${data.analysis.sentiment_classification}<br>
+                            • 情感强度：${data.analysis.sentiment_intensity}<br>
+                            • 情感分析：${data.analysis.sentiment_analysis}<br><br>
+                            <strong>现在请访问主页面测试完整功能：</strong><br>
+                            <a href="http://localhost:3000/index.html" target="_blank" style="color: #4CAF50; text-decoration: underline;">点击访问主页面</a><br><br>
+                            <strong>预期效果：</strong><br>
+                            • 更详细的情感分析说明<br>
+                            • 包含置信度和分析依据<br>
+                            • 更精确的情感强度评估
+                        </div>
+                    `;
+                } else {
+                    throw new Error('API返回失败');
+                }
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error-result">
+                        ❌ 测试失败: ${error.message}<br>
+                        请确保增强版服务器正在运行
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载时自动测试
+        window.onload = function() {
+            setTimeout(testSentimentPrompt, 1000);
+        };
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>强制清除缓存 - 用户原声清洗</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .step { 
+            margin: 20px 0; 
+            padding: 20px; 
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        .success { 
+            color: #4CAF50; 
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .warning { 
+            color: #FF9800; 
+            font-weight: bold;
+        }
+        button { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success-result {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
+        }
+        .error-result {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 强制清除缓存解决方案</h1>
+        
+        <div class="step">
+            <h2>📋 问题确认</h2>
+            <p>✅ 后端服务正常运行 (端口8001)</p>
+            <p>✅ 前端服务正常运行 (端口3000)</p>
+            <p>✅ 网络连接正常</p>
+            <p>✅ CORS配置正确</p>
+            <p>✅ API功能完全正常</p>
+            <p class="warning">❌ 主页面JavaScript缓存了旧版本代码</p>
+        </div>
+
+        <div class="step">
+            <h2>🔧 解决方案</h2>
+            <p>请按以下步骤操作：</p>
+            
+            <h3>步骤1: 完全关闭浏览器</h3>
+            <p>1. 关闭所有浏览器窗口</p>
+            <p>2. 等待5秒</p>
+            <p>3. 重新打开浏览器</p>
+            
+            <h3>步骤2: 强制清除缓存</h3>
+            <p>1. 按 <code>Cmd+Shift+R</code> (Mac) 或 <code>Ctrl+Shift+R</code> (Windows)</p>
+            <p>2. 如果仍然不工作，按 <code>F12</code> 打开开发者工具</p>
+            <p>3. 右键点击刷新按钮，选择"清空缓存并硬性重新加载"</p>
+            
+            <h3>步骤3: 访问主页面</h3>
+            <p>访问：<code>http://localhost:3000/index.html</code></p>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 功能测试</h3>
+            <p>清除缓存后，请测试以下功能：</p>
+            <button onclick="testMainPage()">测试主页面连接</button>
+            <div id="test-result"></div>
+        </div>
+
+        <div class="step">
+            <h2>🎯 预期结果</h2>
+            <p>如果修复成功，您应该看到：</p>
+            <ul>
+                <li>🎭 <strong>情感分析</strong>：情感分类、情感强度、情感分析</li>
+                <li>🌐 <strong>翻译结果</strong>：原声翻译</li>
+                <li>🧠 <strong>智能总结</strong>：主旨提炼、关键要点</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h2>🆘 如果仍然不工作</h2>
+            <p>如果按照上述步骤仍然显示"处理失败"，请：</p>
+            <ol>
+                <li>尝试使用不同的浏览器</li>
+                <li>检查浏览器扩展是否干扰</li>
+                <li>使用无痕模式</li>
+                <li>联系技术支持</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testMainPage() {
+            const result = document.getElementById('test-result');
+            result.innerHTML = '<p>🔄 正在测试...</p>';
+            
+            try {
+                // 测试后端连接
+                const healthResponse = await fetch('http://localhost:8001/health');
+                if (!healthResponse.ok) {
+                    throw new Error('后端服务不可用');
+                }
+                
+                // 测试API调用
+                const formData = new FormData();
+                formData.append('user_input', 'Capaciten a sus motociclistas xq no dan con los domicilios y terminan cancelando los servicios y a uno lo dejan con hambre y eso que hasta con la ubicación que les envía uno a través de su app, gracias');
+                formData.append('source_language', '西班牙语');
+                formData.append('target_language', '中文');
+                formData.append('user_id', 'test_user');
+                
+                const apiResponse = await fetch('http://localhost:8001/api/original-sound/process-text', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!apiResponse.ok) {
+                    throw new Error('API调用失败');
+                }
+                
+                const data = await apiResponse.json();
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="result success-result">
+                            ✅ 主页面连接测试成功！<br>
+                            📊 情感分类: ${data.analysis.sentiment_classification}<br>
+                            📈 情感强度: ${data.analysis.sentiment_intensity}<br>
+                            🌐 翻译: ${data.analysis.original_translation.substring(0, 50)}...
+                        </div>
+                    `;
+                } else {
+                    throw new Error('API返回失败');
+                }
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error-result">
+                        ❌ 测试失败: ${error.message}<br>
+                        请确保后端服务正在运行
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载时自动测试
+        window.onload = function() {
+            setTimeout(testMainPage, 1000);
+        };
+    </script>
+</body>
+</html>
+

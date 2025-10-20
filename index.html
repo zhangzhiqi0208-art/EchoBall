@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeedbackBridge</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 移除外部CDN依赖，避免代理连接错误 -->
+    <style>
+        /* 简单的图标样式替代Font Awesome */
+        .fas { font-family: Arial, sans-serif; }
+        .fa-magic:before { content: "✨"; }
+        .fa-spinner:before { content: "⏳"; }
+        .fa-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fa-exclamation-triangle:before { content: "⚠️"; }
+        .fa-check:before { content: "✅"; }
+        .fa-times:before { content: "❌"; }
+        .fa-file:before { content: "📄"; }
+        .fa-image:before { content: "🖼️"; }
+        .fa-upload:before { content: "📤"; }
+        .fa-download:before { content: "📥"; }
+        .fa-copy:before { content: "📋"; }
+        .fa-history:before { content: "📚"; }
+        .fa-save:before { content: "💾"; }
+        .fa-plus:before { content: "➕"; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>Cohere</h1>
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-template="design" onclick="switchTab('design')">设计体验问题模板</button>
+                <button class="nav-tab" data-template="feedback" onclick="switchTab('feedback')">用户原声清洗模板</button>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-icon" id="historyBtn">
+                    <img src="icon/历史记录-默认.svg" alt="历史记录" class="nav-icon-svg" />
+                </button>
+                <button class="nav-icon" id="draftsBtn">
+                    <img src="icon/草稿箱-默认.svg" alt="草稿箱" class="nav-icon-svg" />
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 左侧输入区域 -->
+        <section class="input-section">
+            <!-- 新会话按钮 -->
+            <button class="new-session-btn" id="newSessionBtn">
+                <img src="icon/新会话-默认.svg" alt="新会话" class="new-session-icon" />
+            </button>
+            
+            <div class="input-container">
+
+
+                <!-- 卡片1：体验问题描述 -->
+                <div class="input-card">
+                    <div class="input-group" id="designInputGroup">
+                        <label for="issueDescription" class="input-label">
+                            体验问题描述
+                        </label>
+                        <div class="textarea-container">
+                            <textarea 
+                                id="issueDescription" 
+                                class="textarea-input antd-style" 
+                                placeholder="请在此描述您发现的体验问题与对应的解决方案，不少于10个字~使用标点符号如[；][。]分隔问题与解决方案，会更快更精准的生成喔~"
+                                rows="6"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户原声清洗输入区域 -->
+                <div class="original-sound-input" id="originalSoundInputGroup" style="display: none;">
+                    <div class="input-container">
+                        <!-- 输入类型选择 -->
+                        <div class="input-group">
+                            <div class="input-type-tabs">
+                                <button class="input-type-tab active" data-type="text">
+                                    <i class="fas fa-keyboard"></i>
+                                    文本原声
+                                </button>
+                                <button class="input-type-tab" data-type="audio">
+                                    <i class="fas fa-microphone"></i>
+                                    录音原声
+                                </button>
+                                <button class="input-type-tab" data-type="excel">
+                                    <i class="fas fa-file-excel"></i>
+                                    Excel文件
+                                </button>
+                            </div>
+                        </div>
+
+                    <!-- 用户原声卡片 -->
+                    <div class="input-card" id="userOriginalSoundCard">
+                        <div class="input-group">
+                            <label for="originalSoundText" class="input-label">
+                                用户原声
+                            </label>
+                            <div class="textarea-container">
+                                <textarea 
+                                    id="originalSoundText" 
+                                    class="textarea-input antd-style" 
+                                    placeholder="请输入用户原声内容..."
+                                    rows="6"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 语言切换卡片 -->
+                    <div class="input-card" id="languageSwitchCard">
+                        <div class="language-row">
+                            <label class="language-label">源语言</label>
+                            <div class="radio-group antd-style" id="sourceLanguageSelect">
+                                <label class="radio-item">
+                                    <input type="radio" value="葡语" name="sourceLanguage" checked>
+                                    <span class="radio-label">葡语</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" value="西语" name="sourceLanguage">
+                                    <span class="radio-label">西语</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" value="英语" name="sourceLanguage">
+                                    <span class="radio-label">英语</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="language-row">
+                            <label class="language-label">目标语言</label>
+                            <div class="radio-group antd-style" id="targetLanguageSelect">
+                                <label class="radio-item">
+                                    <input type="radio" value="中文" name="targetLanguage" checked>
+                                    <span class="radio-label">中文</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    </div>
+                </div>
+
+                <!-- 卡片2：相关图片 -->
+                <div class="input-card">
+                    <div class="input-group" id="designFileUploadGroup">
+                        <label class="input-label">相关图片</label>
+                        <div class="file-upload-area antd-style" id="fileUploadArea" tabindex="0">
+                            <div class="upload-content">
+                                <p class="upload-text">Ctrl+V 粘贴图片至此处</p>
+                                <p class="upload-text">或点击、拖拽文件至此处上传</p>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display: none;">
+                        </div>
+                        <!-- 动态图片显示区域 -->
+                        <div class="uploaded-images-container" id="uploadedImagesContainer">
+                            <!-- 上传的图片将动态显示在这里 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片3：所属地区和归属终端 -->
+                <div class="input-card">
+                    <div class="input-group" id="designSystemTypeGroup">
+                        <label class="input-label">所属地区</label>
+                        <div class="checkbox-group antd-style" id="systemTypeSelect">
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="BR" name="systemType">
+                                <span class="checkbox-label">BR</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="SSL" name="systemType">
+                                <span class="checkbox-label">SSL</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="designModuleGroup">
+                        <label class="input-label">归属模块</label>
+                        <div class="checkbox-group antd-style" id="moduleSelect">
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="管理端" name="module">
+                                <span class="checkbox-label">管理端</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="门店端" name="module">
+                                <span class="checkbox-label">门店端</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" value="移动端" name="module">
+                                <span class="checkbox-label">移动端</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 转化按钮 -->
+                <div class="convert-section">
+                    <button class="convert-btn antd-style" id="convertBtn">
+                        <i class="fas fa-magic"></i>
+                        一键转化
+                    </button>
+                    <button class="convert-btn antd-style" id="originalSoundConvertBtn" style="display: none;">
+                        <i class="fas fa-microphone"></i>
+                        一键转化
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 右侧预览区域 -->
+        <section class="preview-section">
+            <div class="preview-container">
+                <!-- 预览标题栏 -->
+                <div class="preview-header">
+                    <h2 class="preview-title">预览</h2>
+                    <div class="preview-actions" id="previewActions" style="display: none;">
+                        <button class="preview-action-btn" onclick="regenerateContent()">
+                            <img src="icon/重新生成-默认.svg" alt="重新生成" class="preview-action-icon" />
+                        </button>
+                        <div class="preview-action-divider"></div>
+                        <button class="preview-action-btn" onclick="saveToDraft()">
+                            <img src="icon/保存-默认.svg" alt="保存" class="preview-action-icon" />
+                        </button>
+                    </div>
+                </div>
+                <!-- 预览内容区 -->
+                <div class="preview-content" id="previewContent">
+                    <!-- 默认状态下为空 -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 加载状态模态框 -->
+    <div class="loading-modal" id="loadingModal">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>正在智能转化中...</p>
+        </div>
+    </div>
+
+    <!-- 移除外部依赖，避免代理连接错误 -->
+    <script src="script.js?v=20241228-019"></script>
+</body>
+</html>

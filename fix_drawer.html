@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复抽屉测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>修复抽屉测试</h1>
+    
+    <button class="test-button" onclick="testHistoryDrawer()">
+        📚 测试历史记录抽屉
+    </button>
+    
+    <button class="test-button" onclick="testSimpleDrawer()">
+        🧪 测试简单抽屉
+    </button>
+    
+    <div id="debug-output" class="debug-info"></div>
+
+    <script>
+        function log(message) {
+            const debugOutput = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            debugOutput.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+        
+        function testSimpleDrawer() {
+            log('测试简单抽屉...');
+            
+            const drawerHtml = `
+                <div class="simple-drawer-overlay" id="simpleDrawerOverlay" onclick="closeSimpleDrawer()">
+                    <div class="simple-drawer" id="simpleDrawer" onclick="event.stopPropagation()">
+                        <div class="simple-drawer-header">
+                            <h2>简单抽屉</h2>
+                            <button onclick="closeSimpleDrawer()">关闭</button>
+                        </div>
+                        <div class="simple-drawer-body">
+                            <p>这是一个简单的抽屉测试</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .simple-drawer-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+                
+                .simple-drawer-overlay.show {
+                    opacity: 1;
+                }
+                
+                .simple-drawer {
+                    position: fixed;
+                    top: 0;
+                    right: 0;
+                    width: 400px;
+                    height: 100%;
+                    background: white;
+                    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .simple-drawer.show {
+                    transform: translateX(0);
+                }
+                
+                .simple-drawer-header {
+                    padding: 20px;
+                    border-bottom: 1px solid #eee;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                
+                .simple-drawer-body {
+                    padding: 20px;
+                    flex: 1;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // 添加到页面
+            document.body.insertAdjacentHTML('beforeend', drawerHtml);
+            log('简单抽屉HTML已添加');
+            
+            // 显示动画
+            setTimeout(() => {
+                const overlay = document.getElementById('simpleDrawerOverlay');
+                const drawer = document.getElementById('simpleDrawer');
+                log('查找简单抽屉元素: overlay=' + (overlay ? 'found' : 'not found') + ', drawer=' + (drawer ? 'found' : 'not found'));
+                
+                if (overlay && drawer) {
+                    overlay.classList.add('show');
+                    drawer.classList.add('show');
+                    log('简单抽屉已显示');
+                } else {
+                    log('找不到简单抽屉元素');
+                }
+            }, 10);
+        }
+        
+        function closeSimpleDrawer() {
+            log('关闭简单抽屉');
+            const overlay = document.getElementById('simpleDrawerOverlay');
+            const drawer = document.getElementById('simpleDrawer');
+            
+            if (overlay && drawer) {
+                overlay.classList.remove('show');
+                drawer.classList.remove('show');
+                
+                setTimeout(() => {
+                    if (overlay && overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                        log('简单抽屉已移除');
+                    }
+                }, 300);
+            }
+        }
+        
+        function testHistoryDrawer() {
+            log('测试历史记录抽屉...');
+            
+            // 模拟数据
+            const mockData = [];
+            const mockPagination = {total: 0, page: 1, page_size: 20, total_pages: 0};
+            
+            log('调用 displayHistoryModal...');
+            displayHistoryModal(mockData, mockPagination);
+        }
+        
+        // 重写显示抽屉函数
+        function displayHistoryModal(historyData, pagination) {
+            log('displayHistoryModal 被调用，数据: ' + JSON.stringify(historyData) + '，分页: ' + JSON.stringify(pagination));
+            
+            // 创建抽屉HTML
+            const drawerHtml = `
+                <div class="history-drawer-overlay" id="historyDrawerOverlay" onclick="closeHistoryModal()">
+                    <div class="history-drawer" id="historyDrawer" onclick="event.stopPropagation()">
+                        <div class="history-drawer-header">
+                            <h2>转化历史记录</h2>
+                            <button class="history-close-btn" onclick="closeHistoryModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="history-drawer-body">
+                            <div class="history-stats">
+                                <span>共 ${pagination.total} 条记录</span>
+                                <button class="clear-history-btn" onclick="clearAllHistory()">
+                                    <i class="fas fa-trash"></i> 清空历史
+                                </button>
+                            </div>
+                            <div class="history-list" id="historyList">
+                                ${historyData.length > 0 ? historyData.map(record => `
+                                    <div class="history-item" data-id="${record.id}">
+                                        <div class="history-item-header">
+                                            <h3 class="history-title">${record.title}</h3>
+                                            <div class="history-actions">
+                                                <button class="history-action-btn view-btn" onclick="viewHistoryDetail('${record.id}')">
+                                                    <i class="fas fa-eye"></i> 查看
+                                                </button>
+                                                <button class="history-action-btn delete-btn" onclick="deleteHistoryRecord('${record.id}')">
+                                                    <i class="fas fa-trash"></i> 删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="history-item-content">
+                                            <div class="history-description">${record.original_description}</div>
+                                            <div class="history-meta">
+                                                <span class="history-region">${record.system_types.join('、')}</span>
+                                                <span class="history-module">${record.modules.join('、')}</span>
+                                                <span class="history-time">${formatDateTime(record.created_at)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('') : `
+                                    <div class="empty-history">
+                                        <div class="empty-icon">📚</div>
+                                        <div class="empty-title">暂无历史记录</div>
+                                        <div class="empty-description">开始转化您的第一个问题，历史记录将在这里显示</div>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            log('创建抽屉HTML完成，准备添加到页面...');
+            
+            // 添加到页面
+            document.body.insertAdjacentHTML('beforeend', drawerHtml);
+            log('抽屉HTML已添加到页面');
+            
+            // 添加样式
+            addHistoryDrawerStyles();
+            log('样式已添加');
+            
+            // 添加动画效果
+            setTimeout(() => {
+                const overlay = document.getElementById('historyDrawerOverlay');
+                const drawer = document.getElementById('historyDrawer');
+                log('查找抽屉元素: overlay=' + (overlay ? 'found' : 'not found') + ', drawer=' + (drawer ? 'found' : 'not found'));
+                
+                if (overlay && drawer) {
+                    log('添加show类');
+                    overlay.classList.add('show');
+                    drawer.classList.add('show');
+                } else {
+                    log('找不到抽屉元素');
+                }
+            }, 10);
+            
+            // 添加ESC键关闭功能
+            const handleKeyDown = (event) => {
+                if (event.key === 'Escape') {
+                    closeHistoryModal();
+                    document.removeEventListener('keydown', handleKeyDown);
+                }
+            };
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        
+        // 关闭抽屉函数
+        function closeHistoryModal() {
+            log('关闭抽屉');
+            const overlay = document.getElementById('historyDrawerOverlay');
+            const drawer = document.getElementById('historyDrawer');
+            
+            if (overlay && drawer) {
+                overlay.classList.remove('show');
+                drawer.classList.remove('show');
+                
+                setTimeout(() => {
+                    if (overlay && overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                        log('抽屉已从页面移除');
+                    }
+                }, 300);
+            }
+        }
+        
+        // 格式化日期时间
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 添加样式函数
+        function addHistoryDrawerStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .history-drawer-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+                
+                .history-drawer-overlay.show {
+                    opacity: 1;
+                }
+                
+                .history-drawer {
+                    position: fixed;
+                    top: 0;
+                    right: 0;
+                    width: 480px;
+                    height: 100%;
+                    background: white;
+                    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .history-drawer.show {
+                    transform: translateX(0);
+                }
+                
+                .history-drawer-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 20px 24px;
+                    border-bottom: 1px solid #eee;
+                    background: #f8f9fa;
+                    flex-shrink: 0;
+                }
+                
+                .history-drawer-header h2 {
+                    margin: 0;
+                    color: #333;
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+                
+                .history-close-btn {
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    cursor: pointer;
+                    color: #666;
+                    padding: 8px;
+                    border-radius: 4px;
+                    transition: all 0.2s ease;
+                }
+                
+                .history-close-btn:hover {
+                    color: #333;
+                    background: #f0f0f0;
+                }
+                
+                .history-drawer-body {
+                    flex: 1;
+                    padding: 20px 24px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .history-stats {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 16px;
+                    border-bottom: 1px solid #eee;
+                    flex-shrink: 0;
+                }
+                
+                .history-stats span {
+                    font-size: 14px;
+                    color: #666;
+                    font-weight: 500;
+                }
+                
+                .clear-history-btn {
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    transition: background 0.2s ease;
+                }
+                
+                .clear-history-btn:hover {
+                    background: #c82333;
+                }
+                
+                .history-list {
+                    flex: 1;
+                    overflow-y: auto;
+                }
+                
+                .empty-history {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 60px 20px;
+                    text-align: center;
+                    color: #999;
+                }
+                
+                .empty-icon {
+                    font-size: 48px;
+                    margin-bottom: 16px;
+                    opacity: 0.6;
+                }
+                
+                .empty-title {
+                    font-size: 18px;
+                    font-weight: 500;
+                    color: #666;
+                    margin-bottom: 8px;
+                }
+                
+                .empty-description {
+                    font-size: 14px;
+                    color: #999;
+                    line-height: 1.5;
+                    max-width: 280px;
+                }
+                
+                @media (max-width: 768px) {
+                    .history-drawer {
+                        width: 100%;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // 其他必要的函数
+        function clearAllHistory() {
+            log('清空历史记录');
+        }
+        
+        function viewHistoryDetail(id) {
+            log('查看历史记录详情: ' + id);
+        }
+        
+        function deleteHistoryRecord(id) {
+            log('删除历史记录: ' + id);
+        }
+        
+        log('修复抽屉测试页面加载完成');
+    </script>
+</body>
+</html>

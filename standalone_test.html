@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>独立模板切换测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #1890ff;
+            border-bottom: 2px solid #1890ff;
+        }
+        
+        .content-area {
+            padding: 20px;
+        }
+        
+        .template-section {
+            display: none;
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .template-section.active {
+            display: block;
+            border-color: #1890ff;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #40a9ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-template="design">设计体验问题模板</button>
+            <button class="nav-tab" data-template="feedback">用户原声清洗模板</button>
+        </div>
+        
+        <div class="content-area">
+            <!-- 设计体验问题模板 -->
+            <div class="template-section active" id="designSection">
+                <h3>🎨 设计体验问题模板</h3>
+                <p>用于处理设计体验相关的问题反馈</p>
+                <div>
+                    <textarea placeholder="请输入设计体验问题描述..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                </div>
+                <button class="btn">转换设计体验问题</button>
+            </div>
+            
+            <!-- 用户原声清洗模板 -->
+            <div class="template-section" id="feedbackSection">
+                <h3>🎤 用户原声清洗模板</h3>
+                <p>支持文本、录音、Excel三种输入方式，智能分析用户原声</p>
+                <div style="margin: 20px 0;">
+                    <button class="btn">📝 文本原声</button>
+                    <button class="btn">🎙️ 录音原声</button>
+                    <button class="btn">📊 Excel文件</button>
+                </div>
+                <div>
+                    <textarea placeholder="请输入用户原声内容..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                </div>
+                <button class="btn">转换用户原声</button>
+            </div>
+            
+            <div class="debug-info" id="debugInfo">
+                当前状态: 设计体验问题模板
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleTabSwitch(event) {
+            console.log('=== 模板切换开始 ===');
+            const clickedTab = event.target;
+            const templateType = clickedTab.dataset.template;
+            
+            console.log('点击的标签:', clickedTab.textContent);
+            console.log('模板类型:', templateType);
+            
+            // 移除所有tab的active状态
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加当前tab的active状态
+            clickedTab.classList.add('active');
+            
+            // 隐藏所有模板区域
+            document.querySelectorAll('.template-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 显示对应的模板区域
+            if (templateType === 'design') {
+                document.getElementById('designSection').classList.add('active');
+                console.log('显示设计体验问题模板');
+            } else if (templateType === 'feedback') {
+                document.getElementById('feedbackSection').classList.add('active');
+                console.log('显示用户原声清洗模板');
+            }
+            
+            // 更新调试信息
+            const templateName = templateType === 'design' ? '设计体验问题模板' : '用户原声清洗模板';
+            document.getElementById('debugInfo').textContent = `当前状态: ${templateName}`;
+            
+            console.log('=== 模板切换完成 ===');
+        }
+
+        // 页面加载完成后绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始绑定事件');
+            
+            const navTabs = document.querySelectorAll('.nav-tab');
+            console.log('找到的标签数量:', navTabs.length);
+            
+            navTabs.forEach((tab, index) => {
+                console.log(`绑定事件到标签 ${index}:`, tab.textContent);
+                tab.addEventListener('click', handleTabSwitch);
+            });
+            
+            console.log('事件绑定完成');
+        });
+    </script>
+</body>
+</html>

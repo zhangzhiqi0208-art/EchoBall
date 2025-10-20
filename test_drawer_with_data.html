@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抽屉数据测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>抽屉数据测试</h1>
+    
+    <button class="test-button" onclick="testWithData()">
+        📚 测试抽屉显示（有数据）
+    </button>
+    
+    <button class="test-button" onclick="testWithEmptyData()">
+        📭 测试抽屉显示（无数据）
+    </button>
+    
+    <button class="test-button" onclick="clearDebug()">
+        🗑️ 清空调试信息
+    </button>
+    
+    <div id="debug-output" class="debug-info"></div>
+
+    <script>
+        function log(message) {
+            const debugOutput = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            debugOutput.textContent += `[${timestamp}] ${message}\n`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearDebug() {
+            document.getElementById('debug-output').textContent = '';
+        }
+        
+        async function testWithData() {
+            log('测试抽屉显示（有数据）...');
+            
+            try {
+                const userId = 'test_user_drawer';
+                log('用户ID: ' + userId);
+                
+                const response = await fetch(`http://localhost:8000/api/history/list?user_id=${userId}&page=1&page_size=20`);
+                log('API响应状态: ' + response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    log('API响应数据: ' + JSON.stringify(result, null, 2));
+                    
+                    if (result.success) {
+                        log('准备显示抽屉，数据条数: ' + (result.data ? result.data.length : 0));
+                        displayHistoryModal(result.data || [], result.pagination || {total: 0, page: 1, page_size: 20, total_pages: 0});
+                    } else {
+                        log('API返回失败: ' + result.message);
+                    }
+                } else {
+                    log('API调用失败: ' + response.status);
+                }
+            } catch (error) {
+                log('API调用异常: ' + error.message);
+            }
+        }
+        
+        async function testWithEmptyData() {
+            log('测试抽屉显示（无数据）...');
+            
+            try {
+                const userId = 'empty_user_' + Date.now();
+                log('用户ID: ' + userId);
+                
+                const response = await fetch(`http://localhost:8000/api/history/list?user_id=${userId}&page=1&page_size=20`);
+                log('API响应状态: ' + response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    log('API响应数据: ' + JSON.stringify(result, null, 2));
+                    
+                    if (result.success) {
+                        log('准备显示抽屉，数据条数: ' + (result.data ? result.data.length : 0));
+                        displayHistoryModal(result.data || [], result.pagination || {total: 0, page: 1, page_size: 20, total_pages: 0});
+                    } else {
+                        log('API返回失败: ' + result.message);
+                    }
+                } else {
+                    log('API调用失败: ' + response.status);
+                }
+            } catch (error) {
+                log('API调用异常: ' + error.message);
+            }
+        }
+        
+        // 重写显示抽屉函数
+        function displayHistoryModal(historyData, pagination) {
+            log('displayHistoryModal 被调用，数据: ' + JSON.stringify(historyData) + '，分页: ' + JSON.stringify(pagination));
+            
+            // 创建抽屉HTML
+            const drawerHtml = `
+                <div class="history-drawer-overlay" id="historyDrawerOverlay" onclick="closeHistoryModal()">
+                    <div class="history-drawer" id="historyDrawer" onclick="event.stopPropagation()">
+                        <div class="history-drawer-header">
+                            <h2>转化历史记录</h2>
+                            <button class="history-close-btn" onclick="closeHistoryModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="history-drawer-body">
+                            <div class="history-stats">
+                                <span>共 ${pagination.total} 条记录</span>
+                                <button class="clear-history-btn" onclick="clearAllHistory()">
+                                    <i class="fas fa-trash"></i> 清空历史
+                                </button>
+                            </div>
+                            <div class="history-list" id="historyList">
+                                ${historyData.length > 0 ? historyData.map(record => `
+                                    <div class="history-item" data-id="${record.id}">
+                                        <div class="history-item-header">
+                                            <h3 class="history-title">${record.title}</h3>
+                                            <div class="history-actions">
+                                                <button class="history-action-btn view-btn" onclick="viewHistoryDetail('${record.id}')">
+                                                    <i class="fas fa-eye"></i> 查看
+                                                </button>
+                                                <button class="history-action-btn delete-btn" onclick="deleteHistoryRecord('${record.id}')">
+                                                    <i class="fas fa-trash"></i> 删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="history-item-content">
+                                            <div class="history-description">${record.original_description}</div>
+                                            <div class="history-meta">
+                                                <span class="history-region">${record.system_types.join('、')}</span>
+                                                <span class="history-module">${record.modules.join('、')}</span>
+                                                <span class="history-time">${formatDateTime(record.created_at)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('') : `
+                                    <div class="empty-history">
+                                        <div class="empty-icon">📚</div>
+                                        <div class="empty-title">暂无历史记录</div>
+                                        <div class="empty-description">开始转化您的第一个问题，历史记录将在这里显示</div>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            log('创建抽屉HTML完成，准备添加到页面...');
+            
+            // 添加到页面
+            document.body.insertAdjacentHTML('beforeend', drawerHtml);
+            log('抽屉HTML已添加到页面');
+            
+            // 添加样式
+            addHistoryDrawerStyles();
+            log('样式已添加');
+            
+            // 添加动画效果
+            setTimeout(() => {
+                const overlay = document.getElementById('historyDrawerOverlay');
+                const drawer = document.getElementById('historyDrawer');
+                log('查找抽屉元素: overlay=' + (overlay ? 'found' : 'not found') + ', drawer=' + (drawer ? 'found' : 'not found'));
+                
+                if (overlay && drawer) {
+                    log('添加show类');
+                    overlay.classList.add('show');
+                    drawer.classList.add('show');
+                } else {
+                    log('找不到抽屉元素');
+                }
+            }, 10);
+            
+            // 添加ESC键关闭功能
+            const handleKeyDown = (event) => {
+                if (event.key === 'Escape') {
+                    closeHistoryModal();
+                    document.removeEventListener('keydown', handleKeyDown);
+                }
+            };
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        
+        // 关闭抽屉函数
+        function closeHistoryModal() {
+            log('关闭抽屉');
+            const overlay = document.getElementById('historyDrawerOverlay');
+            const drawer = document.getElementById('historyDrawer');
+            
+            if (overlay && drawer) {
+                overlay.classList.remove('show');
+                drawer.classList.remove('show');
+                
+                setTimeout(() => {
+                    if (overlay && overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                        log('抽屉已从页面移除');
+                    }
+                }, 300);
+            }
+        }
+        
+        // 格式化日期时间
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 添加样式函数
+        function addHistoryDrawerStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .history-drawer-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+                
+                .history-drawer-overlay.show {
+                    opacity: 1;
+                }
+                
+                .history-drawer {
+                    position: fixed;
+                    top: 0;
+                    right: 0;
+                    width: 480px;
+                    height: 100%;
+                    background: white;
+                    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .history-drawer.show {
+                    transform: translateX(0);
+                }
+                
+                .history-drawer-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 20px 24px;
+                    border-bottom: 1px solid #eee;
+                    background: #f8f9fa;
+                    flex-shrink: 0;
+                }
+                
+                .history-drawer-header h2 {
+                    margin: 0;
+                    color: #333;
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+                
+                .history-close-btn {
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    cursor: pointer;
+                    color: #666;
+                    padding: 8px;
+                    border-radius: 4px;
+                    transition: all 0.2s ease;
+                }
+                
+                .history-close-btn:hover {
+                    color: #333;
+                    background: #f0f0f0;
+                }
+                
+                .history-drawer-body {
+                    flex: 1;
+                    padding: 20px 24px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .history-stats {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 16px;
+                    border-bottom: 1px solid #eee;
+                    flex-shrink: 0;
+                }
+                
+                .history-stats span {
+                    font-size: 14px;
+                    color: #666;
+                    font-weight: 500;
+                }
+                
+                .clear-history-btn {
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    transition: background 0.2s ease;
+                }
+                
+                .clear-history-btn:hover {
+                    background: #c82333;
+                }
+                
+                .history-list {
+                    flex: 1;
+                    overflow-y: auto;
+                }
+                
+                .history-item {
+                    border: 1px solid #e9ecef;
+                    border-radius: 8px;
+                    margin-bottom: 12px;
+                    padding: 16px;
+                    transition: all 0.2s ease;
+                    background: #fff;
+                }
+                
+                .history-item:hover {
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                    border-color: #007bff;
+                }
+                
+                .history-item-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 12px;
+                }
+                
+                .history-title {
+                    margin: 0;
+                    font-size: 15px;
+                    color: #333;
+                    flex: 1;
+                    margin-right: 12px;
+                    line-height: 1.4;
+                    font-weight: 500;
+                }
+                
+                .history-actions {
+                    display: flex;
+                    gap: 6px;
+                    flex-shrink: 0;
+                }
+                
+                .history-action-btn {
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 11px;
+                    transition: all 0.2s ease;
+                }
+                
+                .history-action-btn.delete-btn {
+                    background: #dc3545;
+                }
+                
+                .history-action-btn:hover {
+                    opacity: 0.9;
+                    transform: translateY(-1px);
+                }
+                
+                .history-description {
+                    color: #666;
+                    margin-bottom: 12px;
+                    line-height: 1.5;
+                    font-size: 13px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                
+                .history-meta {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                    font-size: 11px;
+                    color: #999;
+                }
+                
+                .history-meta span {
+                    background: #f8f9fa;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    border: 1px solid #e9ecef;
+                }
+                
+                .history-region {
+                    color: #007bff !important;
+                    background: #e3f2fd !important;
+                    border-color: #bbdefb !important;
+                }
+                
+                .history-module {
+                    color: #28a745 !important;
+                    background: #e8f5e8 !important;
+                    border-color: #c3e6c3 !important;
+                }
+                
+                .history-time {
+                    color: #6c757d !important;
+                    background: #f8f9fa !important;
+                    border-color: #e9ecef !important;
+                }
+                
+                .empty-history {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 60px 20px;
+                    text-align: center;
+                    color: #999;
+                }
+                
+                .empty-icon {
+                    font-size: 48px;
+                    margin-bottom: 16px;
+                    opacity: 0.6;
+                }
+                
+                .empty-title {
+                    font-size: 18px;
+                    font-weight: 500;
+                    color: #666;
+                    margin-bottom: 8px;
+                }
+                
+                .empty-description {
+                    font-size: 14px;
+                    color: #999;
+                    line-height: 1.5;
+                    max-width: 280px;
+                }
+                
+                @media (max-width: 768px) {
+                    .history-drawer {
+                        width: 100%;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // 其他必要的函数
+        function clearAllHistory() {
+            log('清空历史记录');
+        }
+        
+        function viewHistoryDetail(id) {
+            log('查看历史记录详情: ' + id);
+        }
+        
+        function deleteHistoryRecord(id) {
+            log('删除历史记录: ' + id);
+        }
+        
+        log('抽屉数据测试页面加载完成');
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端调试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .debug { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { color: #52c41a; }
+        .error { color: #ff4d4f; }
+        button { background: #52c41a; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 前端调试页面</h1>
+    
+    <div class="debug">
+        <h3>测试API调用</h3>
+        <button onclick="testAPI()">🚀 测试API调用</button>
+        <div id="result"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>检查后端服务</h3>
+        <button onclick="checkBackend()">🔍 检查后端服务</button>
+        <div id="backendResult"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>测试完整流程</h3>
+        <button onclick="testFullProcess()">🎯 测试完整流程</button>
+        <div id="fullResult"></div>
+    </div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '正在测试API调用...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('user_input', 'Capaciten a sus motociclistas xq no dan con los domicilios y terminan cancelando los servicios y a uno lo dejan con hambre y eso que hasta con la ubicación que les envía uno a través de su app, gracias');
+                formData.append('source_language', '西班牙语');
+                formData.append('target_language', '中文');
+                formData.append('user_id', 'test_user');
+                
+                console.log('🚀 发送API请求...');
+                const response = await fetch('http://localhost:8001/api/original-sound/process-text', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('📡 响应状态:', response.status);
+                const result = await response.json();
+                console.log('📄 响应数据:', result);
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="success">✅ API调用成功！<br>情感分类: ${result.analysis.sentiment_classification}<br>翻译: ${result.analysis.original_translation.substring(0, 50)}...</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ API调用失败: ${result.message}</div>`;
+                }
+                
+            } catch (error) {
+                console.error('❌ API调用异常:', error);
+                resultDiv.innerHTML = `<div class="error">❌ API调用异常: ${error.message}</div>`;
+            }
+        }
+        
+        async function checkBackend() {
+            const resultDiv = document.getElementById('backendResult');
+            resultDiv.innerHTML = '正在检查后端服务...';
+            
+            try {
+                const response = await fetch('http://localhost:8001/health');
+                const result = await response.json();
+                resultDiv.innerHTML = `<div class="success">✅ 后端服务正常: ${JSON.stringify(result)}</div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 后端服务异常: ${error.message}</div>`;
+            }
+        }
+        
+        async function testFullProcess() {
+            const resultDiv = document.getElementById('fullResult');
+            resultDiv.innerHTML = '正在测试完整流程...';
+            
+            try {
+                // 模拟前端处理流程
+                const userInput = 'Capaciten a sus motociclistas xq no dan con los domicilios y terminan cancelando los servicios y a uno lo dejan con hambre y eso que hasta con la ubicación que les envía uno a través de su app, gracias';
+                const sourceLanguage = '西班牙语';
+                const targetLanguage = '中文';
+                
+                const formData = new FormData();
+                formData.append('user_input', userInput);
+                formData.append('source_language', sourceLanguage);
+                formData.append('target_language', targetLanguage);
+                formData.append('user_id', 'test_user');
+                
+                const response = await fetch('http://localhost:8001/api/original-sound/process-text', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result && result.success) {
+                    // 模拟显示结果
+                    let html = '<div class="success">✅ 完整流程测试成功！</div>';
+                    html += '<div style="margin-top: 15px; padding: 15px; background: white; border-radius: 5px;">';
+                    html += '<h4>🎭 情感分析</h4>';
+                    html += `<p><strong>情感分类:</strong> ${result.analysis.sentiment_classification}</p>`;
+                    html += `<p><strong>情感强度:</strong> ${result.analysis.sentiment_intensity}</p>`;
+                    html += `<p><strong>情感分析:</strong> ${result.analysis.sentiment_analysis}</p>`;
+                    html += '<h4>🌐 翻译结果</h4>';
+                    html += `<p><strong>原声翻译:</strong> ${result.analysis.original_translation}</p>`;
+                    html += '<h4>🧠 智能总结</h4>';
+                    html += `<p><strong>主旨提炼:</strong> ${result.analysis.ai_optimized_summary}</p>`;
+                    html += `<p><strong>关键要点:</strong> ${result.analysis.key_points}</p>`;
+                    html += '</div>';
+                    
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ 完整流程测试失败: ${result?.message || '未知错误'}</div>`;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 完整流程测试异常: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

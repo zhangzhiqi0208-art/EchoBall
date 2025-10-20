@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeedbackBridge - 用户反馈处理系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="top-nav">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h1>FeedbackBridge</h1>
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" data-template="design">设计体验问题模板</button>
+                        <button class="nav-tab" data-template="feedback">用户原声清洗模板</button>
+                    </div>
+                </div>
+                <div class="nav-actions">
+                    <a href="#" class="nav-link" id="historyBtn">
+                        <i class="fas fa-history"></i>
+                        历史记录
+                    </a>
+                    <a href="#" class="nav-link" id="draftsBtn">
+                        <i class="fas fa-file-alt"></i>
+                        草稿箱
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 左侧输入区域 -->
+            <div class="input-section">
+                <!-- 设计体验问题模板选择器 -->
+                <div class="template-selector" id="designTemplateSelector">
+                    <div class="template-card">
+                        <div class="template-header">
+                            <h3>设计体验问题模板</h3>
+                            <i class="fas fa-palette template-icon"></i>
+                        </div>
+                        <p class="template-desc">用于处理设计体验相关的问题反馈</p>
+                    </div>
+                    <button class="new-session-btn" id="newSessionBtn">
+                        <i class="fas fa-plus"></i>
+                        新会话
+                    </button>
+                </div>
+
+                <!-- 用户原声清洗模板选择器 -->
+                <div class="template-selector" id="originalSoundTemplateSelector" style="display: none;">
+                    <div class="template-card">
+                        <div class="template-header">
+                            <h3>用户原声清洗模板</h3>
+                            <i class="fas fa-microphone template-icon"></i>
+                        </div>
+                        <p class="template-desc">支持文本、录音、Excel三种输入方式，智能分析用户原声并生成标准化内容</p>
+                    </div>
+                    <button class="new-session-btn" id="newOriginalSoundSessionBtn">
+                        <i class="fas fa-plus"></i>
+                        新会话
+                    </button>
+                </div>
+
+                <!-- 设计体验问题描述输入 -->
+                <div class="input-group" id="designInputGroup">
+                    <label for="issueDescription" class="input-label">
+                        问题描述 <span class="required">(必填)</span>
+                    </label>
+                    <div class="textarea-container">
+                        <textarea 
+                            id="issueDescription" 
+                            class="textarea-input antd-style" 
+                            placeholder="请详细描述您遇到的设计体验问题..."
+                            rows="6"
+                        ></textarea>
+                        <div class="char-count" id="charCount">0 字 (不少于10个字)</div>
+                    </div>
+                </div>
+
+                <!-- 用户原声清洗输入区域 -->
+                <div class="original-sound-input" id="originalSoundInputGroup" style="display: none;">
+                    <!-- 输入类型选择 -->
+                    <div class="input-group">
+                        <div class="input-type-tabs">
+                            <button class="input-type-tab active" data-type="text">
+                                <i class="fas fa-keyboard"></i>
+                                文本原声
+                            </button>
+                            <button class="input-type-tab" data-type="audio">
+                                <i class="fas fa-microphone"></i>
+                                录音原声
+                            </button>
+                            <button class="input-type-tab" data-type="excel">
+                                <i class="fas fa-file-excel"></i>
+                                Excel文件
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 用户原声卡片 -->
+                    <div class="input-card" id="userOriginalSoundCard">
+                        <div class="input-group">
+                            <label for="originalSoundText" class="input-label">
+                                用户原声
+                            </label>
+                            <div class="textarea-container">
+                                <textarea 
+                                    id="originalSoundText" 
+                                    class="textarea-input antd-style" 
+                                    placeholder="请输入用户原声内容..."
+                                    rows="6"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 语言切换卡片 -->
+                    <div class="input-card" id="languageSwitchCard">
+                        <div class="language-row">
+                            <label class="language-label">源语言</label>
+                            <div class="radio-group antd-style" id="sourceLanguageSelect">
+                                <label class="radio-item">
+                                    <input type="radio" value="葡语" name="sourceLanguage" checked>
+                                    <span class="radio-label">葡语</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" value="西语" name="sourceLanguage">
+                                    <span class="radio-label">西语</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" value="英语" name="sourceLanguage">
+                                    <span class="radio-label">英语</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="language-row">
+                            <label class="language-label">目标语言</label>
+                            <div class="radio-group antd-style" id="targetLanguageSelect">
+                                <label class="radio-item">
+                                    <input type="radio" value="中文" name="targetLanguage" checked>
+                                    <span class="radio-label">中文</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文本原声输入 -->
+                    <div class="input-type-content active" id="textInputContent">
+                    </div>
+
+                    <!-- 一键转化按钮 -->
+                    <div class="convert-section">
+                        <button id="originalSoundConvertBtn" class="convert-btn antd-style">
+                            <i class="fas fa-magic"></i>
+                            一键转化
+                        </button>
+                    </div>
+
+                    <!-- 录音原声输入 -->
+                    <div class="input-type-content" id="audioInputContent">
+                        <div class="input-group">
+                            <label class="input-label">上传音频文件</label>
+                            <div class="file-upload-area antd-style" id="audioUploadArea">
+                                <div class="upload-content">
+                                    <i class="fas fa-microphone upload-icon"></i>
+                                    <p class="upload-text">点击或拖拽音频文件到此区域上传</p>
+                                    <p class="upload-hint">支持 MP3、WAV、M4A、OGG 格式，最大 50MB</p>
+                                </div>
+                                <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
+                            </div>
+                            <div class="uploaded-files" id="audioUploadedFiles"></div>
+                        </div>
+                    </div>
+
+                    <!-- Excel文件输入 -->
+                    <div class="input-type-content" id="excelInputContent">
+                        <div class="input-group">
+                            <label class="input-label">上传Excel文件</label>
+                            <div class="file-upload-area antd-style" id="excelUploadArea">
+                                <div class="upload-content">
+                                    <i class="fas fa-file-excel upload-icon"></i>
+                                    <p class="upload-text">点击或拖拽Excel文件到此区域上传</p>
+                                    <p class="upload-hint">支持 .xlsx、.xls 格式，最大 20MB</p>
+                                </div>
+                                <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display: none;">
+                            </div>
+                            <div class="uploaded-files" id="excelUploadedFiles"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 其他输入字段... -->
+                <div class="file-upload-group" id="designFileUploadGroup">
+                    <div class="input-group">
+                        <label class="input-label">体验问题截图/录屏</label>
+                        <div class="file-upload-area antd-style" id="fileUploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="upload-text">Ctrl+V粘贴图片(.jpg/.png)至此处 或点击、拖拽文件至此处上传</p>
+                                <p class="upload-hint">支持 JPG、PNG、GIF、MP4 格式，单个文件最大 10MB</p>
+                            </div>
+                            <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                        </div>
+                        <div class="uploaded-files" id="uploadedFiles"></div>
+                    </div>
+                </div>
+
+                <!-- 系统类型选择 -->
+                <div class="system-type-group" id="designSystemTypeGroup">
+                    <div class="input-group">
+                        <label class="input-label">所属地区</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="systemType" value="BR" checked>
+                                <span class="checkbox-label">BR</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="systemType" value="SSL" checked>
+                                <span class="checkbox-label">SSL</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块选择 -->
+                <div class="module-group" id="designModuleGroup">
+                    <div class="input-group">
+                        <label class="input-label">归属终端/模块</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="module" value="管理端" checked>
+                                <span class="checkbox-label">管理端</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="module" value="门店端" checked>
+                                <span class="checkbox-label">门店端</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="module" value="移动端">
+                                <span class="checkbox-label">移动端</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 转换按钮 -->
+                <button class="convert-btn antd-style" id="convertBtn">
+                    <i class="fas fa-bolt"></i>
+                    一键转化
+                </button>
+
+                <!-- 用户原声清洗转换按钮 -->
+                <button class="convert-btn antd-style" id="originalSoundConvertBtn" style="display: none;">
+                    <i class="fas fa-bolt"></i>
+                    一键转化
+                </button>
+            </div>
+
+            <!-- 右侧预览区域 -->
+            <div class="preview-section">
+                <div class="preview-header">
+                    <h3>预览</h3>
+                    <div class="preview-actions" id="previewActions" style="display: none;">
+                        <button class="action-btn" id="copyBtn">
+                            <i class="fas fa-copy"></i>
+                            复制
+                        </button>
+                        <button class="action-btn" id="downloadBtn">
+                            <i class="fas fa-download"></i>
+                            下载
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-content" id="previewContent">
+                    <div class="preview-placeholder">
+                        <i class="fas fa-eye"></i>
+                        <p>转化后的标准化内容将在此处显示</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知容器 -->
+    <div id="notificationContainer"></div>
+
+    <!-- 移除外部依赖，避免代理连接错误 -->
+    <script src="script.js?v=20241018-2200"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板切换测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .nav-tab.active {
+            background: white;
+            color: #1890ff;
+            border-bottom: 2px solid #1890ff;
+        }
+        .content-area {
+            padding: 20px;
+        }
+        .template-content {
+            display: none;
+        }
+        .template-content.active {
+            display: block;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-template="design">设计体验问题模板</button>
+            <button class="nav-tab" data-template="feedback">用户原声清洗模板</button>
+        </div>
+        
+        <div class="content-area">
+            <div class="template-content active" id="designContent">
+                <h3>设计体验问题模板</h3>
+                <p>这是设计体验问题模板的内容区域</p>
+                <div class="debug-info" id="debugInfo">
+                    当前模板: design
+                </div>
+            </div>
+            
+            <div class="template-content" id="feedbackContent">
+                <h3>用户原声清洗模板</h3>
+                <p>这是用户原声清洗模板的内容区域</p>
+                <div class="debug-info" id="debugInfo2">
+                    当前模板: feedback
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模板切换功能
+        function handleTabSwitch(event) {
+            const clickedTab = event.target;
+            const templateType = clickedTab.dataset.template;
+            
+            console.log('切换到模板:', templateType);
+            
+            // 移除所有tab的active状态
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加当前tab的active状态
+            clickedTab.classList.add('active');
+            
+            // 隐藏所有内容
+            document.querySelectorAll('.template-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 显示对应内容
+            if (templateType === 'design') {
+                document.getElementById('designContent').classList.add('active');
+            } else if (templateType === 'feedback') {
+                document.getElementById('feedbackContent').classList.add('active');
+            }
+            
+            // 更新调试信息
+            document.getElementById('debugInfo').textContent = `当前模板: ${templateType}`;
+            document.getElementById('debugInfo2').textContent = `当前模板: ${templateType}`;
+        }
+
+        // 绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', handleTabSwitch);
+            });
+            
+            console.log('模板切换测试页面已加载');
+        });
+    </script>
+</body>
+</html>

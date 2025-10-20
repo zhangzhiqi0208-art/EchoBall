@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时机修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>时机修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 问题已修复！</h3>
+        <p>我发现了根本问题：<strong>事件绑定时机错误</strong></p>
+        <ul>
+            <li>在 <code>init()</code> 函数中过早调用了 <code>initializeFileUpload()</code></li>
+            <li>此时音频上传元素还没有被创建</li>
+            <li>只有在用户切换到"录音原声"标签时，元素才会被创建</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🔧 修复内容：</h3>
+        <ul>
+            <li>移除了 <code>init()</code> 中的 <code>initializeFileUpload()</code> 调用</li>
+            <li>事件绑定现在只在切换到"录音原声"时进行</li>
+            <li>更新版本号到 v=20241228-012</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 测试步骤：</h3>
+        <ol>
+            <li><strong>硬刷新页面</strong>：按 <code>Ctrl+Shift+R</code> 或 <code>Cmd+Shift+R</code></li>
+            <li>访问：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            <li>点击"用户原声清洗模板"</li>
+            <li>点击"录音原声"</li>
+            <li>检查控制台是否显示：<code>检查音频上传元素: {audioUploadArea: true, audioFileInput: true}</code></li>
+            <li>尝试点击上传区域</li>
+            <li>尝试拖拽音频文件到上传区域</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 预期控制台输出：</h3>
+        <p><strong>初始化时（不应该有错误）：</strong></p>
+        <pre>
+初始化用户原声清洗模板...
+初始化: 确保语言切换卡片显示
+        </pre>
+        
+        <p><strong>切换到录音原声时：</strong></p>
+        <pre>
+switchInputType: 输入类型 = audio
+switchInputType: 显示音频上传卡片
+switchInputType: 音频上传事件监听器已重新绑定
+检查音频上传元素: {audioUploadArea: true, audioFileInput: true}
+找到音频上传元素，开始绑定事件
+音频上传事件监听器已绑定
+添加拖拽支持到元素: [object HTMLDivElement]
+拖拽支持已添加
+        </pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>📝 如果仍然不工作：</h3>
+        <ul>
+            <li>确认版本号是 v=20241228-012</li>
+            <li>完全关闭浏览器并重新打开</li>
+            <li>使用无痕模式打开页面</li>
+            <li>检查控制台是否还有"找不到音频上传元素"的错误</li>
+        </ul>
+    </div>
+    
+    <button onclick="window.open('http://localhost:3000/index.html', '_blank')">打开主应用</button>
+    <button onclick="location.reload(true)">刷新当前页面</button>
+    
+    <script>
+        console.log('时机修复测试页面已加载');
+        console.log('问题：事件绑定时机错误');
+        console.log('解决：移除过早的 initializeFileUpload 调用');
+    </script>
+</body>
+</html>
+

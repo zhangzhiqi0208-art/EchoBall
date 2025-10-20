@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连接诊断页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 连接诊断页面</h1>
+    
+    <div class="test-section">
+        <h3>测试1: 直接访问后端</h3>
+        <button onclick="testDirectAccess()">测试直接访问</button>
+        <div id="direct-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试2: 使用fetch API</h3>
+        <button onclick="testFetchAPI()">测试Fetch API</button>
+        <div id="fetch-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试3: 检查CORS</h3>
+        <button onclick="testCORS()">测试CORS</button>
+        <div id="cors-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试4: 完整API调用</h3>
+        <button onclick="testFullAPI()">测试完整API</button>
+        <div id="full-result"></div>
+    </div>
+
+    <script>
+        async function testDirectAccess() {
+            const result = document.getElementById('direct-result');
+            try {
+                const response = await fetch('http://localhost:8001/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `<span class="success">✅ 直接访问成功: ${JSON.stringify(data)}</span>`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ 响应错误: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ 连接失败: ${error.message}</span>`;
+            }
+        }
+        
+        async function testFetchAPI() {
+            const result = document.getElementById('fetch-result');
+            try {
+                const response = await fetch('http://localhost:8001/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `<span class="success">✅ Fetch API成功: ${JSON.stringify(data)}</span>`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ Fetch响应错误: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Fetch失败: ${error.message}</span>`;
+            }
+        }
+        
+        async function testCORS() {
+            const result = document.getElementById('cors-result');
+            try {
+                const response = await fetch('http://localhost:8001/health', {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `<span class="success">✅ CORS测试成功: ${JSON.stringify(data)}</span>`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ CORS响应错误: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ CORS失败: ${error.message}</span>`;
+            }
+        }
+        
+        async function testFullAPI() {
+            const result = document.getElementById('full-result');
+            try {
+                const formData = new FormData();
+                formData.append('user_input', 'test message');
+                formData.append('source_language', '西班牙语');
+                formData.append('target_language', '中文');
+                formData.append('user_id', 'test_user');
+                
+                const response = await fetch('http://localhost:8001/api/original-sound/process-text', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `<span class="success">✅ 完整API成功: ${JSON.stringify(data, null, 2)}</span>`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ 完整API响应错误: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ 完整API失败: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

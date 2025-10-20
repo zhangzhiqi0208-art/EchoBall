@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主应用修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .upload-area { border: 2px dashed #ccc; padding: 40px; text-align: center; cursor: pointer; background: #f9f9f9; margin: 20px 0; }
+        .upload-area:hover { background: #f0f0f0; }
+        .upload-area.drag-over { border-color: #007bff; background: #e3f2fd; }
+    </style>
+</head>
+<body>
+    <h1>主应用修复测试</h1>
+    
+    <div class="test-section">
+        <h3>测试步骤：</h3>
+        <ol>
+            <li>打开主应用：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            <li>点击"用户原声清洗模板"标签</li>
+            <li>点击"录音原声"子标签</li>
+            <li>尝试点击或拖拽音频文件到上传区域</li>
+            <li>检查浏览器控制台是否有"音频上传事件监听器已绑定"的日志</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>预期结果：</h3>
+        <ul>
+            <li>✅ 上传区域应该可以点击</li>
+            <li>✅ 上传区域应该支持拖拽</li>
+            <li>✅ 文件大小限制为25MB</li>
+            <li>✅ 支持MP3、WAV、M4A、OGG格式</li>
+            <li>✅ 控制台显示事件绑定成功</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>如果仍然无法上传，请检查：</h3>
+        <ul>
+            <li>浏览器控制台是否有JavaScript错误</li>
+            <li>是否看到"音频上传事件监听器已绑定"的日志</li>
+            <li>音频上传区域是否存在（检查元素）</li>
+            <li>文件格式是否符合要求</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>调试信息：</h3>
+        <p>打开浏览器开发者工具（F12），查看控制台输出，应该看到类似以下日志：</p>
+        <pre>
+switchInputType: 输入类型 = audio
+switchInputType: 显示音频上传卡片
+switchInputType: 音频上传事件监听器已重新绑定
+音频上传事件监听器已绑定
+拖拽支持已添加
+        </pre>
+    </div>
+    
+    <script>
+        console.log('主应用修复测试页面已加载');
+        console.log('请按照上述步骤测试主应用的音频上传功能');
+    </script>
+</body>
+</html>
+

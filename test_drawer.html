@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史记录抽屉测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>历史记录抽屉功能测试</h1>
+        
+        <div class="test-info">
+            <h3>测试说明</h3>
+            <p>点击下面的按钮测试历史记录抽屉功能：</p>
+            <ul>
+                <li>测试抽屉打开和关闭动画</li>
+                <li>测试历史记录列表显示</li>
+                <li>测试ESC键关闭功能</li>
+                <li>测试点击遮罩层关闭功能</li>
+            </ul>
+        </div>
+        
+        <button class="test-button" onclick="testHistoryDrawer()">
+            📚 打开历史记录抽屉
+        </button>
+        
+        <button class="test-button" onclick="testWithMockData()">
+            🧪 使用模拟数据测试
+        </button>
+        
+        <div id="test-results" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- 引入主脚本 -->
+    <script src="script.js"></script>
+    
+    <script>
+        // 测试函数
+        function testHistoryDrawer() {
+            console.log('开始测试历史记录抽屉...');
+            showHistory();
+        }
+        
+        function testWithMockData() {
+            console.log('使用模拟数据测试抽屉...');
+            
+            // 模拟历史记录数据
+            const mockData = [
+                {
+                    id: 'test-1',
+                    title: '测试转化记录 1',
+                    original_description: '这是一个测试问题描述，用于验证历史记录抽屉功能是否正常工作。',
+                    system_types: ['BR', 'SSL'],
+                    modules: ['管理端', '移动端'],
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 'test-2',
+                    title: '测试转化记录 2',
+                    original_description: '另一个测试问题描述，包含更多的内容来测试抽屉的显示效果。',
+                    system_types: ['BR'],
+                    modules: ['门店端'],
+                    created_at: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: 'test-3',
+                    title: '测试转化记录 3',
+                    original_description: '第三个测试记录，用于测试长文本的显示效果。',
+                    system_types: ['SSL'],
+                    modules: ['管理端', '门店端', '移动端'],
+                    created_at: new Date(Date.now() - 7200000).toISOString()
+                }
+            ];
+            
+            const mockPagination = {
+                total: 3,
+                page: 1,
+                page_size: 20,
+                total_pages: 1
+            };
+            
+            // 直接调用显示函数
+            displayHistoryModal(mockData, mockPagination);
+        }
+        
+        // 重写通知函数，在测试页面显示
+        function showNotification(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                padding: 10px 15px;
+                margin: 5px 0;
+                border-radius: 4px;
+                background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};
+                color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460'};
+                border: 1px solid ${type === 'success' ? '#c3e6cb' : type === 'error' ? '#f5c6cb' : '#bee5eb'};
+            `;
+            notification.textContent = message;
+            resultsDiv.appendChild(notification);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+        
+        // 重写获取用户ID函数
+        function getCurrentUserId() {
+            return 'test_user_drawer';
+        }
+        
+        console.log('测试页面加载完成');
+    </script>
+</body>
+</html>

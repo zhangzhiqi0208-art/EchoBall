@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重复事件绑定修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>重复事件绑定修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 问题已找到并修复！</h3>
+        <p>我发现了需要点击/拖拽两次的根本原因：<strong>事件重复绑定</strong></p>
+        <ul>
+            <li><strong>问题</strong>：每次切换标签时，<code>switchInputType</code> 都会调用 <code>initializeFileUpload()</code></li>
+            <li><strong>影响</strong>：没有移除旧的事件监听器，导致事件被重复绑定</li>
+            <li><strong>结果</strong>：一次点击触发多个事件处理器，需要多次操作才能成功</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🔧 修复内容：</h3>
+        <ul>
+            <li>在绑定新事件之前，先移除旧的事件监听器</li>
+            <li>使用 <code>element.onclick = null</code> 和 <code>element.onchange = null</code></li>
+            <li>确保每次只有一个事件监听器被绑定</li>
+            <li>更新版本号到 v=20241228-016</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 问题分析：</h3>
+        <p><strong>修复前的问题流程：</strong></p>
+        <pre>
+1. 用户切换到"录音原声"标签
+2. switchInputType('audio') 被调用
+3. initializeFileUpload() 被调用 → 绑定事件监听器 #1
+4. 用户切换到"Excel文件"标签
+5. switchInputType('excel') 被调用
+6. 用户切换回"录音原声"标签
+7. switchInputType('audio') 被调用
+8. initializeFileUpload() 被调用 → 绑定事件监听器 #2 (重复!)
+9. 现在一次点击会触发2个事件处理器
+        </pre>
+        
+        <p><strong>修复后的正确流程：</strong></p>
+        <pre>
+1. 用户切换到"录音原声"标签
+2. switchInputType('audio') 被调用
+3. initializeFileUpload() 被调用
+4. 先移除旧的事件监听器 (onclick = null)
+5. 绑定新的事件监听器 #1
+6. 用户切换标签后再次切换回来
+7. initializeFileUpload() 被调用
+8. 先移除旧的事件监听器 (onclick = null)
+9. 绑定新的事件监听器 #1 (只有一个!)
+        </pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 测试步骤：</h3>
+        <ol>
+            <li><strong>硬刷新页面</strong>：按 <code>Ctrl+Shift+R</code> 或 <code>Cmd+Shift+R</code></li>
+            <li>访问：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            
+            <li><strong>测试音频上传</strong>：
+                <ul>
+                    <li>切换到"用户原声清洗模板"</li>
+                    <li>点击"录音原声"标签</li>
+                    <li>点击音频上传区域 → 应该一次点击就打开文件选择对话框</li>
+                    <li>拖拽音频文件到上传区域 → 应该一次拖拽就完成上传</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试Excel上传</strong>：
+                <ul>
+                    <li>点击"Excel文件"标签</li>
+                    <li>点击Excel上传区域 → 应该一次点击就打开文件选择对话框</li>
+                    <li>拖拽Excel文件到上传区域 → 应该一次拖拽就完成上传</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试标签切换</strong>：
+                <ul>
+                    <li>在"录音原声"和"Excel文件"之间多次切换</li>
+                    <li>每次切换后，上传功能都应该正常工作</li>
+                    <li>不应该需要点击/拖拽多次</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 预期控制台输出：</h3>
+        <p><strong>修复前（有问题）：</strong></p>
+        <pre>
+音频上传区域被点击
+触发音频文件选择
+音频上传区域被点击  ← 重复触发
+触发音频文件选择    ← 重复触发
+音频上传区域被点击  ← 重复触发
+触发音频文件选择    ← 重复触发
+        </pre>
+        
+        <p><strong>修复后（正常）：</strong></p>
+        <pre>
+音频上传区域被点击
+触发音频文件选择
+        </pre>
+    </div>
+    
+    <div class="test-section success">
+        <h3>🎉 总结：</h3>
+        <p>现在音频和Excel上传应该：</p>
+        <ul>
+            <li>✅ 一次点击就打开文件选择对话框</li>
+            <li>✅ 一次拖拽就完成文件上传</li>
+            <li>✅ 标签切换后仍然正常工作</li>
+            <li>✅ 不会出现重复事件触发</li>
+        </ul>
+    </div>
+    
+    <button onclick="window.open('http://localhost:3000/index.html', '_blank')">打开主应用</button>
+    <button onclick="location.reload(true)">刷新当前页面</button>
+    
+    <script>
+        console.log('重复事件绑定修复测试页面已加载');
+        console.log('问题：事件监听器被重复绑定，导致一次操作触发多次事件');
+        console.log('解决：在绑定新事件前先移除旧的事件监听器');
+    </script>
+</body>
+</html>
+

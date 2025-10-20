@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片显示测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 4px solid #52c41a; }
+        .info { border-left: 4px solid #1890ff; }
+        .warning { border-left: 4px solid #faad14; }
+        .error { border-left: 4px solid #ff4d4f; }
+        
+        .test-button {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #40a9ff;
+        }
+        
+        .debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        
+        .card-preview {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .input-type-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .input-type-tab {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .input-type-tab.active {
+            background: #1890ff;
+            color: white;
+        }
+        
+        .input-type-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .input-type-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 卡片显示问题修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 修复内容</h3>
+        <ul>
+            <li><strong>音频上传卡片</strong>：添加了详细的调试日志和强制显示样式</li>
+            <li><strong>Excel上传卡片</strong>：添加了详细的调试日志和强制显示样式</li>
+            <li><strong>卡片创建逻辑</strong>：确保卡片创建后立即设置为显示状态</li>
+            <li><strong>事件绑定</strong>：修复了重复事件绑定问题</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🧪 测试步骤</h3>
+        <ol>
+            <li>打开用户原声清洗模板页面</li>
+            <li>切换到"录音原声"标签</li>
+            <li>检查控制台日志，应该看到：<code>🎵 处理音频上传卡片</code></li>
+            <li>切换到"Excel文件"标签</li>
+            <li>检查控制台日志，应该看到：<code>📊 处理Excel上传卡片</code></li>
+            <li>验证卡片是否正确显示</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 模拟测试</h3>
+        <p>点击下面的按钮来模拟标签页切换：</p>
+        
+        <div class="input-type-tabs">
+            <button class="input-type-tab active" data-type="text" onclick="switchInputType('text')">
+                📝 文本原声
+            </button>
+            <button class="input-type-tab" data-type="audio" onclick="switchInputType('audio')">
+                🎵 录音原声
+            </button>
+            <button class="input-type-tab" data-type="excel" onclick="switchInputType('excel')">
+                📊 Excel文件
+            </button>
+        </div>
+        
+        <div class="card-preview">
+            <div id="textInputContent" class="input-type-content active">
+                <h4>📝 文本原声卡片</h4>
+                <p>这里应该显示文本输入区域</p>
+            </div>
+            
+            <div id="audioInputContent" class="input-type-content">
+                <h4>🎵 音频上传卡片</h4>
+                <p>这里应该显示音频上传区域</p>
+                <div style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+                    <p>🎤 点击或拖拽音频文件到此区域上传</p>
+                    <p style="font-size: 12px; color: #666;">支持 MP3、WAV、M4A、OGG 格式，最大 25MB</p>
+                </div>
+            </div>
+            
+            <div id="excelInputContent" class="input-type-content">
+                <h4>📊 Excel上传卡片</h4>
+                <p>这里应该显示Excel上传区域</p>
+                <div style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+                    <p>📊 点击或拖拽Excel文件到此区域上传</p>
+                    <p style="font-size: 12px; color: #666;">支持 .xlsx、.xls 格式，最大 20MB</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            当前状态: 文本原声
+        </div>
+    </div>
+    
+    <div class="test-section warning">
+        <h3>⚠️ 如果仍然有问题</h3>
+        <p>请检查以下几点：</p>
+        <ul>
+            <li>确保 <code>script.js</code> 文件已正确加载</li>
+            <li>检查控制台是否有 JavaScript 错误</li>
+            <li>确认 <code>OriginalSoundTemplate</code> 已正确初始化</li>
+            <li>验证标签页切换事件是否正确绑定</li>
+        </ul>
+    </div>
+    
+    <script>
+        function switchInputType(inputType) {
+            console.log('🔄 切换输入类型:', inputType);
+            
+            // 更新标签页状态
+            document.querySelectorAll('.input-type-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${inputType}"]`).classList.add('active');
+            
+            // 更新内容显示
+            document.querySelectorAll('.input-type-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            const inputContentElement = document.getElementById(`${inputType}InputContent`);
+            if (inputContentElement) {
+                inputContentElement.classList.add('active');
+                console.log('✅ 显示卡片:', inputType);
+            } else {
+                console.error('❌ 找不到卡片:', inputType);
+            }
+            
+            // 更新调试信息
+            const templateName = {
+                'text': '文本原声',
+                'audio': '录音原声', 
+                'excel': 'Excel文件'
+            }[inputType];
+            document.getElementById('debugInfo').textContent = `当前状态: ${templateName}`;
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 卡片显示测试页面已加载');
+            console.log('🎯 请切换到"录音原声"或"Excel文件"标签测试卡片显示');
+        });
+    </script>
+</body>
+</html>
+

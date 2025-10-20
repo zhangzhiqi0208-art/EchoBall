@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件样式预览</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #1a1a1a; 
+            color: #fff; 
+        }
+        .preview-section { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            border: 1px solid #555;
+        }
+        .preview-title {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .uploaded-files {
+            margin: 10px 0;
+        }
+        
+        /* 上传文件样式 - 根据图片还原 */
+        .uploaded-file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .uploaded-file-item:hover {
+            border-color: #777;
+            background: #333;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-info i {
+            color: #fff;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .file-name {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .delete-file-btn {
+            background: rgba(220, 53, 69, 0.8);
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .uploaded-file-item:hover .delete-file-btn {
+            opacity: 1;
+        }
+
+        .delete-file-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+        }
+        
+        .demo-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .demo-button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>文件上传样式预览</h1>
+    
+    <div class="preview-section">
+        <div class="preview-title">音频文件样式</div>
+        <div class="uploaded-files" id="audioUploadedFiles">
+            <!-- 音频文件将在这里显示 -->
+        </div>
+        <button class="demo-button" onclick="addDemoAudioFile()">添加演示音频文件</button>
+    </div>
+    
+    <div class="preview-section">
+        <div class="preview-title">Excel文件样式</div>
+        <div class="uploaded-files" id="excelUploadedFiles">
+            <!-- Excel文件将在这里显示 -->
+        </div>
+        <button class="demo-button" onclick="addDemoExcelFile()">添加演示Excel文件</button>
+    </div>
+    
+    <div class="preview-section">
+        <div class="preview-title">样式说明</div>
+        <ul>
+            <li><strong>默认状态</strong>：深灰色背景，浅灰色边框，显示白色图标和文件名</li>
+            <li><strong>悬停状态</strong>：边框变亮，背景稍微变亮，显示删除按钮</li>
+            <li><strong>删除按钮</strong>：红色背景，悬停时放大，点击可删除文件</li>
+            <li><strong>图标类型</strong>：音频文件显示音频图标，Excel文件显示Excel图标</li>
+        </ul>
+    </div>
+    
+    <script>
+        // 模拟文件对象
+        function createMockFile(name, type, size) {
+            return {
+                name: name,
+                type: type,
+                size: size
+            };
+        }
+        
+        // 显示上传的文件
+        function displayUploadedFile(file, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            // 根据文件类型选择图标
+            let fileIcon = 'fas fa-file';
+            if (file.type.startsWith('audio/')) {
+                fileIcon = 'fas fa-file-audio';
+            } else if (file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')) {
+                fileIcon = 'fas fa-file-excel';
+            }
+            
+            const fileItem = document.createElement('div');
+            fileItem.className = 'uploaded-file-item';
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <i class="${fileIcon}"></i>
+                    <span class="file-name">${file.name}</span>
+                </div>
+                <button class="delete-file-btn" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(fileItem);
+        }
+        
+        // 添加演示音频文件
+        function addDemoAudioFile() {
+            const audioFiles = [
+                createMockFile('AUDIO-2025-09-09-18-00-24.m4a', 'audio/mp4', 780040),
+                createMockFile('录音文件.wav', 'audio/wav', 2048000),
+                createMockFile('语音消息.mp3', 'audio/mpeg', 1536000)
+            ];
+            
+            audioFiles.forEach(file => {
+                displayUploadedFile(file, 'audioUploadedFiles');
+            });
+        }
+        
+        // 添加演示Excel文件
+        function addDemoExcelFile() {
+            const excelFiles = [
+                createMockFile('2025年H1用户原声合集.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 2048000),
+                createMockFile('用户反馈数据.xls', 'application/vnd.ms-excel', 1536000),
+                createMockFile('产品需求调研.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 3072000)
+            ];
+            
+            excelFiles.forEach(file => {
+                displayUploadedFile(file, 'excelUploadedFiles');
+            });
+        }
+        
+        // 页面加载完成后自动添加一些演示文件
+        window.onload = function() {
+            console.log('文件样式预览页面已加载');
+            console.log('样式特点：深灰色背景，悬停显示删除按钮，白色图标和文字');
+        };
+    </script>
+</body>
+</html>
+

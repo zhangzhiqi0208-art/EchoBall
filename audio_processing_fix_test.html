@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音频处理修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 4px solid #52c41a; }
+        .info { border-left: 4px solid #1890ff; }
+        .warning { border-left: 4px solid #faad14; }
+        .error { border-left: 4px solid #ff4d4f; }
+        
+        .test-button {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #40a9ff;
+        }
+        
+        .debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #1890ff;
+            background: #f0f8ff;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #52c41a;
+            background: #f6ffed;
+        }
+        
+        .uploaded-file {
+            background: #f0f8ff;
+            border: 1px solid #1890ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 音频处理修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 修复内容</h3>
+        <ul>
+            <li><strong>多方式文件获取</strong>：从input元素、全局变量、已上传文件区域获取音频文件</li>
+            <li><strong>全局文件存储</strong>：在`handleAudioFileUpload`中将文件存储到`window.selectedAudioFile`</li>
+            <li><strong>详细调试日志</strong>：添加了完整的调试信息，便于问题排查</li>
+            <li><strong>兼容性处理</strong>：确保拖拽和点击上传都能正确工作</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🧪 测试步骤</h3>
+        <ol>
+            <li>上传一个音频文件（点击或拖拽）</li>
+            <li>点击"一键转化"按钮</li>
+            <li>检查控制台日志，应该看到：
+                <ul>
+                    <li><code>🎵 处理音频文件上传: [文件名]</code></li>
+                    <li><code>✅ 音频文件已存储到全局变量: [文件名]</code></li>
+                    <li><code>🎵 开始处理音频原声</code></li>
+                    <li><code>🌐 从全局变量获取音频文件: [文件名]</code></li>
+                </ul>
+            </li>
+            <li>验证不再出现"请选择音频文件"错误</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎵 模拟音频上传测试</h3>
+        <p>点击下面的区域上传音频文件：</p>
+        
+        <div class="file-upload-area" id="audioUploadArea">
+            <div style="font-size: 48px; color: #1890ff; margin-bottom: 16px;">🎤</div>
+            <p style="font-size: 16px; margin: 0 0 8px 0;">点击或拖拽音频文件到此区域上传</p>
+            <p style="font-size: 14px; color: #666; margin: 0;">支持 MP3、WAV、M4A、OGG 格式，最大 25MB</p>
+        </div>
+        
+        <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
+        
+        <div id="audioUploadedFiles"></div>
+        
+        <div style="margin: 20px 0;">
+            <button class="test-button" onclick="testAudioProcessing()">🎯 测试音频处理</button>
+            <button class="test-button" onclick="clearAudioFile()">🗑️ 清除文件</button>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            等待上传音频文件...
+        </div>
+    </div>
+    
+    <div class="test-section warning">
+        <h3>⚠️ 如果仍然有问题</h3>
+        <p>请检查以下几点：</p>
+        <ul>
+            <li>确保音频文件格式正确（MP3、WAV、M4A、OGG）</li>
+            <li>检查文件大小是否超过25MB</li>
+            <li>查看控制台是否有JavaScript错误</li>
+            <li>确认后端服务是否正常运行</li>
+        </ul>
+    </div>
+    
+    <script>
+        // 模拟OriginalSoundTemplate的功能
+        const AudioTestTemplate = {
+            // 处理音频文件上传
+            handleAudioFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                console.log('🎵 处理音频文件上传:', file.name, file.size, file.type);
+                
+                // 验证文件类型
+                if (!file.type.startsWith('audio/')) {
+                    alert('请选择音频文件');
+                    return;
+                }
+                
+                // 验证文件大小 (25MB)
+                if (file.size > 25 * 1024 * 1024) {
+                    alert('音频文件超过25MB限制');
+                    return;
+                }
+                
+                // 存储文件到全局变量
+                window.selectedAudioFile = file;
+                console.log('✅ 音频文件已存储到全局变量:', file.name);
+                
+                this.displayUploadedFile(file, 'audioUploadedFiles');
+                
+                // 清空input，允许重复选择同一文件
+                event.target.value = '';
+            },
+            
+            // 显示已上传的文件
+            displayUploadedFile(file, containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                container.innerHTML = `
+                    <div class="uploaded-file">
+                        <strong>📁 ${file.name}</strong>
+                        <br>
+                        <small>大小: ${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                        <br>
+                        <small>类型: ${file.type}</small>
+                    </div>
+                `;
+                
+                // 更新调试信息
+                document.getElementById('debugInfo').innerHTML = `
+                    <strong>✅ 文件已上传</strong><br>
+                    文件名: ${file.name}<br>
+                    大小: ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                    类型: ${file.type}<br>
+                    全局变量: ${window.selectedAudioFile ? '已设置' : '未设置'}
+                `;
+            },
+            
+            // 处理音频原声（模拟）
+            async processAudioOriginalSound() {
+                console.log('🎵 开始处理音频原声');
+                
+                // 尝试多种方式获取音频文件
+                let audioFile = null;
+                
+                // 方式1：从input元素获取
+                const audioFileInput = document.getElementById('audioFileInput');
+                if (audioFileInput && audioFileInput.files && audioFileInput.files[0]) {
+                    audioFile = audioFileInput.files[0];
+                    console.log('✅ 从input元素获取音频文件:', audioFile.name);
+                }
+                
+                // 方式2：从已上传的文件显示区域获取
+                if (!audioFile) {
+                    const uploadedFilesContainer = document.getElementById('audioUploadedFiles');
+                    if (uploadedFilesContainer && uploadedFilesContainer.dataset.file) {
+                        const fileInfo = JSON.parse(uploadedFilesContainer.dataset.file);
+                        console.log('📁 从已上传文件区域获取文件信息:', fileInfo);
+                    }
+                }
+                
+                // 方式3：检查是否有全局存储的音频文件
+                if (!audioFile && window.selectedAudioFile) {
+                    audioFile = window.selectedAudioFile;
+                    console.log('🌐 从全局变量获取音频文件:', audioFile.name);
+                }
+                
+                console.log('🔍 音频文件检查结果:', {
+                    audioFile: !!audioFile,
+                    fileName: audioFile ? audioFile.name : '无'
+                });
+                
+                if (!audioFile) {
+                    throw new Error('请选择音频文件');
+                }
+                
+                // 模拟处理成功
+                return {
+                    success: true,
+                    message: '音频处理成功',
+                    fileName: audioFile.name
+                };
+            }
+        };
+        
+        // 初始化事件监听器
+        function initializeEventListeners() {
+            const audioUploadArea = document.getElementById('audioUploadArea');
+            const audioFileInput = document.getElementById('audioFileInput');
+            
+            if (audioUploadArea && audioFileInput) {
+                // 点击上传区域
+                audioUploadArea.addEventListener('click', () => {
+                    audioFileInput.click();
+                });
+                
+                // 文件选择
+                audioFileInput.addEventListener('change', (e) => {
+                    AudioTestTemplate.handleAudioFileUpload(e);
+                });
+                
+                // 拖拽上传
+                audioUploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    audioUploadArea.classList.add('dragover');
+                });
+                
+                audioUploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    audioUploadArea.classList.remove('dragover');
+                });
+                
+                audioUploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    audioUploadArea.classList.remove('dragover');
+                    
+                    const files = Array.from(e.dataTransfer.files);
+                    if (files.length > 0) {
+                        const dt = new DataTransfer();
+                        dt.items.add(files[0]);
+                        audioFileInput.files = dt.files;
+                        
+                        const changeEvent = new Event('change', { bubbles: true });
+                        audioFileInput.dispatchEvent(changeEvent);
+                    }
+                });
+            }
+        }
+        
+        // 测试音频处理
+        async function testAudioProcessing() {
+            try {
+                const result = await AudioTestTemplate.processAudioOriginalSound();
+                alert(`✅ ${result.message}\n文件名: ${result.fileName}`);
+            } catch (error) {
+                alert(`❌ ${error.message}`);
+            }
+        }
+        
+        // 清除音频文件
+        function clearAudioFile() {
+            window.selectedAudioFile = null;
+            document.getElementById('audioFileInput').value = '';
+            document.getElementById('audioUploadedFiles').innerHTML = '';
+            document.getElementById('debugInfo').innerHTML = '文件已清除';
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 音频处理修复测试页面已加载');
+            initializeEventListeners();
+        });
+    </script>
+</body>
+</html>
+

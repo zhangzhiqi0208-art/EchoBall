@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最终上传修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>最终上传修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 问题已修复！</h3>
+        <p>我修复了两个关键问题：</p>
+        <ul>
+            <li><strong>Excel上传</strong>：添加了在切换到Excel标签时重新绑定事件监听器</li>
+            <li><strong>音频上传</strong>：增强了文件输入元素的点击处理</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🔧 修复内容：</h3>
+        <ul>
+            <li>Excel上传：在 <code>switchInputType('excel')</code> 时重新绑定事件</li>
+            <li>音频上传：增强了文件输入元素的点击验证</li>
+            <li>添加了详细的控制台日志用于调试</li>
+            <li>更新版本号到 v=20241228-014</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 测试步骤：</h3>
+        <ol>
+            <li><strong>硬刷新页面</strong>：按 <code>Ctrl+Shift+R</code> 或 <code>Cmd+Shift+R</code></li>
+            <li>访问：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            
+            <li><strong>测试音频上传</strong>：
+                <ul>
+                    <li>点击"用户原声清洗模板"</li>
+                    <li>点击"录音原声"标签</li>
+                    <li>点击音频上传区域</li>
+                    <li>检查控制台是否显示"触发音频文件选择"</li>
+                    <li>尝试选择音频文件</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试Excel上传</strong>：
+                <ul>
+                    <li>在"用户原声清洗模板"中</li>
+                    <li>点击"Excel文件"标签</li>
+                    <li>点击Excel上传区域</li>
+                    <li>检查控制台是否显示"找到Excel上传元素，开始绑定事件"</li>
+                    <li>尝试选择Excel文件</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 预期控制台输出：</h3>
+        <p><strong>音频上传：</strong></p>
+        <pre>
+检查音频上传元素: {audioUploadArea: true, audioFileInput: true}
+找到音频上传元素，开始绑定事件
+音频上传事件监听器已绑定
+音频上传区域被点击
+触发音频文件选择
+音频文件被选择
+        </pre>
+        
+        <p><strong>Excel上传：</strong></p>
+        <pre>
+switchInputType: 重新创建Excel上传卡片
+switchInputType: Excel上传事件监听器已重新绑定
+找到Excel上传元素，开始绑定事件
+Excel上传事件监听器已绑定
+Excel上传区域被点击
+触发Excel文件选择
+Excel文件被选择
+        </pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>📝 如果仍然不工作：</h3>
+        <ul>
+            <li>确认版本号是 v=20241228-014</li>
+            <li>完全关闭浏览器并重新打开</li>
+            <li>使用无痕模式打开页面</li>
+            <li>检查控制台是否有JavaScript错误</li>
+            <li>确认文件格式符合要求</li>
+        </ul>
+    </div>
+    
+    <button onclick="window.open('http://localhost:3000/index.html', '_blank')">打开主应用</button>
+    <button onclick="location.reload(true)">刷新当前页面</button>
+    
+    <script>
+        console.log('最终上传修复测试页面已加载');
+        console.log('修复：Excel上传事件绑定时机 + 音频上传文件选择处理');
+    </script>
+</body>
+</html>
+

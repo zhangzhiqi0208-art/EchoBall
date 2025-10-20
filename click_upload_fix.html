@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点击上传修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>点击上传修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 问题已找到并修复！</h3>
+        <p>我发现了音频和Excel上传点击不工作的根本原因：</p>
+        <ul>
+            <li><strong>问题</strong>：使用了 <code>e.preventDefault()</code> 和 <code>e.stopPropagation()</code></li>
+            <li><strong>影响</strong>：阻止了默认的点击行为和事件冒泡</li>
+            <li><strong>解决</strong>：移除这些阻止，并添加 <code>focus()</code> 调用</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🔧 修复内容：</h3>
+        <ul>
+            <li>移除了 <code>e.preventDefault()</code> 和 <code>e.stopPropagation()</code></li>
+            <li>添加了 <code>audioUploadArea.focus()</code> 和 <code>excelUploadArea.focus()</code></li>
+            <li>与图片上传的处理方式保持一致</li>
+            <li>更新版本号到 v=20241228-015</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 代码对比：</h3>
+        <p><strong>修复前（有问题）：</strong></p>
+        <pre>
+audioUploadArea.addEventListener('click', (e) => {
+    e.preventDefault();        // ❌ 阻止默认行为
+    e.stopPropagation();      // ❌ 阻止事件冒泡
+    audioFileInput.click();
+});
+        </pre>
+        
+        <p><strong>修复后（正常）：</strong></p>
+        <pre>
+audioUploadArea.addEventListener('click', (e) => {
+    // ✅ 移除阻止，让点击事件正常工作
+    audioUploadArea.focus();  // ✅ 先获得焦点
+    audioFileInput.click();
+});
+        </pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 测试步骤：</h3>
+        <ol>
+            <li><strong>硬刷新页面</strong>：按 <code>Ctrl+Shift+R</code> 或 <code>Cmd+Shift+R</code></li>
+            <li>访问：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            
+            <li><strong>测试音频上传点击</strong>：
+                <ul>
+                    <li>切换到"用户原声清洗模板"</li>
+                    <li>点击"录音原声"标签</li>
+                    <li>点击音频上传区域</li>
+                    <li>应该能正常打开文件选择对话框</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试Excel上传点击</strong>：
+                <ul>
+                    <li>在"用户原声清洗模板"中</li>
+                    <li>点击"Excel文件"标签</li>
+                    <li>点击Excel上传区域</li>
+                    <li>应该能正常打开文件选择对话框</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 预期控制台输出：</h3>
+        <p><strong>音频上传点击：</strong></p>
+        <pre>
+音频上传区域被点击
+触发音频文件选择
+音频文件被选择
+        </pre>
+        
+        <p><strong>Excel上传点击：</strong></p>
+        <pre>
+Excel上传区域被点击
+触发Excel文件选择
+Excel文件被选择
+        </pre>
+    </div>
+    
+    <div class="test-section success">
+        <h3>🎉 总结：</h3>
+        <p>现在音频和Excel上传应该同时支持：</p>
+        <ul>
+            <li>✅ 点击上传</li>
+            <li>✅ 拖拽上传</li>
+        </ul>
+    </div>
+    
+    <button onclick="window.open('http://localhost:3000/index.html', '_blank')">打开主应用</button>
+    <button onclick="location.reload(true)">刷新当前页面</button>
+    
+    <script>
+        console.log('点击上传修复测试页面已加载');
+        console.log('问题：preventDefault和stopPropagation阻止了点击事件');
+        console.log('解决：移除阻止，添加focus调用');
+    </script>
+</body>
+</html>
+

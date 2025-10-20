@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元素选择器修复测试</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        .success { 
+            color: #4CAF50; 
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .error { 
+            color: #f44336; 
+            font-weight: bold;
+        }
+        button { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success-result {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
+        }
+        .error-result {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        .info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 元素选择器修复测试</h1>
+        
+        <div class="test-section">
+            <h2>📋 修复内容</h2>
+            <p>✅ 修复了元素选择器问题 - 使用正确的CSS选择器查找语言选择元素</p>
+            <p>✅ 添加了错误检查 - 确保元素存在后再访问value属性</p>
+            <p>✅ 修复了所有处理函数 - 文本、音频、Excel处理函数都已修复</p>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 功能测试</h2>
+            <p>请按以下步骤测试：</p>
+            <ol>
+                <li>访问主页面：<code>http://localhost:3000/index.html</code></li>
+                <li>点击"用户原声清洗模板"标签</li>
+                <li>输入西班牙语内容</li>
+                <li>选择源语言：西班牙语</li>
+                <li>选择目标语言：中文</li>
+                <li>点击"一键转化"按钮</li>
+                <li>查看是否还有"Cannot read properties of null"错误</li>
+            </ol>
+            
+            <button onclick="testElementSelectors()">测试元素选择器</button>
+            <div id="element-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 预期结果</h2>
+            <p>如果修复成功，您应该看到：</p>
+            <ul>
+                <li>🎭 <strong>情感分析</strong>：情感分类、情感强度、情感分析</li>
+                <li>🌐 <strong>翻译结果</strong>：原声翻译</li>
+                <li>🧠 <strong>智能总结</strong>：主旨提炼、关键要点</li>
+                <li>❌ <strong>不再有</strong>：Cannot read properties of null 错误</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🆘 如果仍然不工作</h2>
+            <p>请检查：</p>
+            <ol>
+                <li>浏览器控制台是否还有元素选择器错误</li>
+                <li>是否有"转化按钮被点击"的日志</li>
+                <li>网络请求是否成功发送</li>
+                <li>后端服务是否正常运行</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function testElementSelectors() {
+            const result = document.getElementById('element-result');
+            result.innerHTML = '<div class="result info">🔄 正在测试元素选择器...</div>';
+            
+            try {
+                // 测试文本输入元素
+                const textElement = document.getElementById('originalSoundText');
+                if (!textElement) {
+                    throw new Error('找不到文本输入元素 originalSoundText');
+                }
+                
+                // 测试语言选择元素（使用新的选择器）
+                const sourceLanguageElement = document.querySelector('input[name="sourceLanguage"]:checked');
+                const targetLanguageElement = document.querySelector('input[name="targetLanguage"]:checked');
+                
+                if (!sourceLanguageElement) {
+                    throw new Error('找不到源语言选择元素');
+                }
+                
+                if (!targetLanguageElement) {
+                    throw new Error('找不到目标语言选择元素');
+                }
+                
+                result.innerHTML = `
+                    <div class="result success-result">
+                        ✅ 元素选择器测试成功！<br>
+                        📝 文本输入元素: 找到<br>
+                        🌐 源语言选择: ${sourceLanguageElement.value}<br>
+                        🎯 目标语言选择: ${targetLanguageElement.value}<br><br>
+                        <strong>现在请访问主页面测试功能：</strong><br>
+                        <a href="http://localhost:3000/index.html" target="_blank" style="color: #4CAF50; text-decoration: underline;">点击访问主页面</a>
+                    </div>
+                `;
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error-result">
+                        ❌ 元素选择器测试失败: ${error.message}<br>
+                        请确保主页面已加载
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载时自动测试
+        window.onload = function() {
+            setTimeout(testElementSelectors, 1000);
+        };
+    </script>
+</body>
+</html>
+

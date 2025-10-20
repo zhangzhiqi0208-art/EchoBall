@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原生JavaScript音频上传测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .file-upload-area:hover {
+            background: #f6ffed;
+            border-color: #52c41a;
+        }
+        .file-upload-area.drag-over {
+            border-color: #52c41a;
+            background: #f6ffed;
+        }
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .upload-icon {
+            font-size: 48px;
+            color: #52c41a;
+        }
+        .upload-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0;
+        }
+        .upload-hint {
+            font-size: 14px;
+            color: #999;
+            margin: 0;
+        }
+        .file-info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        .success {
+            color: #52c41a;
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+        }
+        .error {
+            color: #ff4d4f;
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+        }
+        button {
+            background: #52c41a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #73d13d;
+        }
+        button:disabled {
+            background: #d9d9d9;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>原生JavaScript音频上传功能测试</h1>
+    
+    <div class="file-upload-area" id="audioUploadArea">
+        <div class="upload-content">
+            <div class="upload-icon">🎵</div>
+            <p class="upload-text">点击或拖拽音频文件到此区域上传</p>
+            <p class="upload-hint">支持 MP3、WAV、M4A、OGG 格式，最大 25MB</p>
+        </div>
+        <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
+    </div>
+    
+    <div class="file-info" id="fileInfo">
+        <h3>文件信息：</h3>
+        <div id="fileName"></div>
+        <div id="fileSize"></div>
+        <div id="fileType"></div>
+        <div id="validationResult"></div>
+    </div>
+    
+    <button id="testButton" disabled>测试上传</button>
+    <button id="clearButton">清除文件</button>
+    
+    <script>
+        const audioUploadArea = document.getElementById('audioUploadArea');
+        const audioFileInput = document.getElementById('audioFileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const testButton = document.getElementById('testButton');
+        const clearButton = document.getElementById('clearButton');
+        let selectedFile = null;
+        
+        // 文件验证函数
+        function validateFile(file) {
+            const maxSize = 25 * 1024 * 1024; // 25MB
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/ogg', 'audio/m4a'];
+            const allowedExtensions = ['.mp3', '.wav', '.m4a', '.ogg'];
+            const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+            
+            let errors = [];
+            
+            // 检查文件大小
+            if (file.size > maxSize) {
+                errors.push(`文件大小超过25MB限制 (当前: ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+            }
+            
+            // 检查文件格式
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                errors.push(`不支持的文件格式 (当前: ${file.type || fileExtension})`);
+            }
+            
+            return {
+                isValid: errors.length === 0,
+                errors: errors
+            };
+        }
+        
+        // 显示文件信息
+        function showFileInfo(file) {
+            const validation = validateFile(file);
+            
+            document.getElementById('fileName').textContent = `文件名: ${file.name}`;
+            document.getElementById('fileSize').textContent = `文件大小: ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+            document.getElementById('fileType').textContent = `文件类型: ${file.type || '未知'}`;
+            
+            const resultDiv = document.getElementById('validationResult');
+            if (validation.isValid) {
+                resultDiv.innerHTML = '<span style="color: #52c41a;">✅ 文件验证通过</span>';
+                fileInfo.className = 'file-info success';
+                testButton.disabled = false;
+            } else {
+                resultDiv.innerHTML = '<span style="color: #ff4d4f;">❌ 文件验证失败: ' + validation.errors.join(', ') + '</span>';
+                fileInfo.className = 'file-info error';
+                testButton.disabled = true;
+            }
+            
+            fileInfo.style.display = 'block';
+        }
+        
+        // 点击上传
+        audioUploadArea.addEventListener('click', () => {
+            console.log('点击上传区域');
+            audioFileInput.click();
+        });
+        
+        // 文件选择处理
+        audioFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                showFileInfo(file);
+                console.log('文件已选择:', file.name);
+            }
+        });
+        
+        // 拖拽上传
+        audioUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            audioUploadArea.classList.add('drag-over');
+            console.log('拖拽悬停');
+        });
+        
+        audioUploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            audioUploadArea.classList.remove('drag-over');
+            console.log('拖拽离开');
+        });
+        
+        audioUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            audioUploadArea.classList.remove('drag-over');
+            console.log('文件拖拽放下');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                selectedFile = file;
+                showFileInfo(file);
+                console.log('拖拽文件已选择:', file.name);
+            }
+        });
+        
+        // 测试上传按钮
+        testButton.addEventListener('click', () => {
+            if (selectedFile) {
+                alert('文件上传测试成功！\n\n在实际应用中，这里会调用API上传文件。\n\n文件信息:\n- 名称: ' + selectedFile.name + '\n- 大小: ' + (selectedFile.size / 1024 / 1024).toFixed(2) + 'MB\n- 类型: ' + selectedFile.type);
+            }
+        });
+        
+        // 清除文件按钮
+        clearButton.addEventListener('click', () => {
+            selectedFile = null;
+            audioFileInput.value = '';
+            fileInfo.style.display = 'none';
+            testButton.disabled = true;
+            console.log('文件已清除');
+        });
+        
+        console.log('音频上传测试页面已加载');
+    </script>
+</body>
+</html>
+

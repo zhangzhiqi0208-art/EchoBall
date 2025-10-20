@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户原声清洗测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .input-panel {
+            flex: 1;
+            background: #2c2c2c;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .preview-panel {
+            flex: 1;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #444;
+            color: white;
+        }
+        button {
+            background: #52c41a;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #73d13d;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        .error {
+            color: #ff4d4f;
+            background: #fff2f0;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ffccc7;
+        }
+        .success {
+            color: #52c41a;
+            background: #f6ffed;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #b7eb8f;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        .section h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 2px solid #52c41a;
+            padding-bottom: 8px;
+        }
+        .analysis-item {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .analysis-item .label {
+            font-weight: 600;
+            color: #666;
+            min-width: 100px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .analysis-item .value {
+            flex: 1;
+            color: #333;
+            word-break: break-word;
+        }
+        .sentiment.负向 {
+            color: #ff4d4f;
+            font-weight: 600;
+            background: #fff2f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ffccc7;
+        }
+        .intensity.强烈 {
+            color: #ff4d4f;
+            font-weight: 600;
+            background: #fff2f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ffccc7;
+        }
+        .value.translation {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 6px;
+            padding: 12px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .value.summary {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 6px;
+            padding: 12px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .value.key-points {
+            background: #fff7e6;
+            border: 1px solid #ffd591;
+            border-radius: 6px;
+            padding: 12px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-line;
+            word-break: break-word;
+        }
+        .value.analysis {
+            background: #f9f0ff;
+            border: 1px solid #d3adf7;
+            border-radius: 6px;
+            padding: 12px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 用户原声清洗功能测试</h1>
+    
+    <div class="container">
+        <div class="input-panel">
+            <h2>📝 输入原声内容</h2>
+            
+            <form id="testForm">
+                <div class="form-group">
+                    <label for="userInput">用户原声（西班牙语）:</label>
+                    <textarea id="userInput" rows="6" placeholder="请输入西班牙语原声内容...">Capaciten a sus motociclistas xq no dan con los domicilios y terminan cancelando los servicios y a uno lo dejan con hambre y eso que hasta con la ubicación que les envía uno a través de su app, gracias</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sourceLanguage">源语言:</label>
+                    <select id="sourceLanguage">
+                        <option value="西班牙语" selected>西班牙语</option>
+                        <option value="英文">英文</option>
+                        <option value="葡萄牙语">葡萄牙语</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="targetLanguage">目标语言:</label>
+                    <select id="targetLanguage">
+                        <option value="中文" selected>中文</option>
+                    </select>
+                </div>
+                
+                <button type="button" onclick="testOriginalSound()">🚀 一键转化</button>
+            </form>
+        </div>
+        
+        <div class="preview-panel">
+            <h2>📊 预览结果</h2>
+            <div id="result" style="display: none;">
+                <div id="resultContent"></div>
+            </div>
+            <div id="emptyState" style="text-align: center; color: #999; padding: 40px;">
+                转化后的标准化内容将在此处显示
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function testOriginalSound() {
+            const userInput = document.getElementById('userInput').value.trim();
+            const sourceLanguage = document.getElementById('sourceLanguage').value;
+            const targetLanguage = document.getElementById('targetLanguage').value;
+            
+            if (!userInput || userInput.length < 5) {
+                showResult('请输入至少5个字符的用户原声内容', 'error');
+                return;
+            }
+            
+            showResult('正在处理中...', 'info');
+            
+            try {
+                const formData = new FormData();
+                formData.append('user_input', userInput);
+                formData.append('source_language', sourceLanguage);
+                formData.append('target_language', targetLanguage);
+                formData.append('user_id', 'test_user');
+                
+                console.log('🚀 发送API请求到: http://localhost:8001/api/original-sound/process-text');
+                
+                const response = await fetch('http://localhost:8001/api/original-sound/process-text', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('📡 API响应状态:', response.status);
+                const result = await response.json();
+                console.log('📄 API响应数据:', result);
+                
+                if (result.success) {
+                    displayResult(result);
+                } else {
+                    showResult(`处理失败: ${result.message || '未知错误'}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ 处理失败:', error);
+                showResult(`处理失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            const emptyState = document.getElementById('emptyState');
+            
+            resultDiv.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            if (type === 'info') {
+                resultContent.innerHTML = `<div style="text-align: center; color: #1890ff;">${message}</div>`;
+            } else {
+                resultContent.innerHTML = `<div class="${type}">${message}</div>`;
+            }
+        }
+        
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            const emptyState = document.getElementById('emptyState');
+            
+            resultDiv.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            const analysis = result.analysis;
+            
+            let html = '<div class="success">✅ 处理成功！</div>';
+            
+            // 情感分析部分
+            html += `
+                <div class="section">
+                    <h3>🎭 情感分析</h3>
+                    <div class="analysis-item">
+                        <span class="label">情感分类：</span>
+                        <span class="value sentiment ${analysis.sentiment_classification}">${analysis.sentiment_classification}</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="label">情感强度：</span>
+                        <span class="value intensity ${analysis.sentiment_intensity}">${analysis.sentiment_intensity}</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="label">情感分析：</span>
+                        <div class="value analysis">${analysis.sentiment_analysis}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 翻译结果部分
+            html += `
+                <div class="section">
+                    <h3>🌐 翻译结果</h3>
+                    <div class="analysis-item">
+                        <span class="label">原声翻译：</span>
+                        <div class="value translation">${analysis.original_translation}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 智能总结部分
+            html += `
+                <div class="section">
+                    <h3>🧠 智能总结</h3>
+                    <div class="analysis-item">
+                        <span class="label">主旨提炼：</span>
+                        <div class="value summary">${analysis.ai_optimized_summary}</div>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="label">关键要点：</span>
+                        <div class="value key-points">${analysis.key_points}</div>
+                    </div>
+                </div>
+            `;
+            
+            resultContent.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
+

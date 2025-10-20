@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三个上传框测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>三个上传框统一修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 问题已解决！</h3>
+        <p>我发现了根本问题：<strong>三个上传框使用了不同的事件绑定方式</strong></p>
+        <ul>
+            <li><strong>图片上传框</strong>：使用全局事件绑定，在页面加载时就完成</li>
+            <li><strong>音频上传框</strong>：使用局部事件绑定，只在特定条件下执行</li>
+            <li><strong>Excel上传框</strong>：使用局部事件绑定，只在特定条件下执行</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🔧 修复内容：</h3>
+        <ul>
+            <li>统一了所有三个上传框的事件绑定方式</li>
+            <li>使用与图片上传相同的拖拽处理逻辑</li>
+            <li>移除了复杂的 `addDragAndDropSupport` 函数</li>
+            <li>更新版本号到 v=20241228-013</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 测试步骤：</h3>
+        <ol>
+            <li><strong>硬刷新页面</strong>：按 <code>Ctrl+Shift+R</code> 或 <code>Cmd+Shift+R</code></li>
+            <li>访问：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            
+            <li><strong>测试图片上传</strong>：
+                <ul>
+                    <li>在"设计体验问题模板"中</li>
+                    <li>点击"相关图片"上传区域</li>
+                    <li>拖拽图片文件到上传区域</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试音频上传</strong>：
+                <ul>
+                    <li>切换到"用户原声清洗模板"</li>
+                    <li>点击"录音原声"标签</li>
+                    <li>点击音频上传区域</li>
+                    <li>拖拽音频文件到上传区域</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试Excel上传</strong>：
+                <ul>
+                    <li>在"用户原声清洗模板"中</li>
+                    <li>点击"Excel文件"标签</li>
+                    <li>点击Excel上传区域</li>
+                    <li>拖拽Excel文件到上传区域</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 预期控制台输出：</h3>
+        <p><strong>图片上传（应该一直工作）：</strong></p>
+        <pre>📍 文件上传区域被点击，获得焦点并触发文件选择</pre>
+        
+        <p><strong>音频上传（切换到录音原声时）：</strong></p>
+        <pre>
+检查音频上传元素: {audioUploadArea: true, audioFileInput: true}
+找到音频上传元素，开始绑定事件
+音频上传事件监听器已绑定
+音频上传区域被点击
+        </pre>
+        
+        <p><strong>Excel上传（切换到Excel文件时）：</strong></p>
+        <pre>
+找到Excel上传元素，开始绑定事件
+Excel上传事件监听器已绑定
+Excel上传区域被点击
+        </pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>📝 如果仍然不工作：</h3>
+        <ul>
+            <li>确认版本号是 v=20241228-013</li>
+            <li>完全关闭浏览器并重新打开</li>
+            <li>使用无痕模式打开页面</li>
+            <li>检查控制台是否有JavaScript错误</li>
+            <li>确认文件格式符合要求</li>
+        </ul>
+    </div>
+    
+    <button onclick="window.open('http://localhost:3000/index.html', '_blank')">打开主应用</button>
+    <button onclick="location.reload(true)">刷新当前页面</button>
+    
+    <script>
+        console.log('三个上传框测试页面已加载');
+        console.log('问题：三个上传框使用不同的事件绑定方式');
+        console.log('解决：统一使用与图片上传相同的绑定方式');
+    </script>
+</body>
+</html>
+

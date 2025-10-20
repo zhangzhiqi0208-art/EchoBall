@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>音频上传测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            background: #f9f9f9;
+        }
+        .upload-area:hover { background: #f0f0f0; }
+        .upload-area.drag-over { border-color: #007bff; background: #e3f2fd; }
+        .file-info { margin: 20px 0; padding: 15px; background: #f0f0f0; display: none; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>音频上传测试</h1>
+    
+    <div class="upload-area" id="uploadArea">
+        <div style="font-size: 48px;">🎵</div>
+        <p>点击或拖拽音频文件到此区域上传</p>
+        <p style="color: #666;">支持 MP3、WAV、M4A、OGG 格式，最大 25MB</p>
+    </div>
+    
+    <div class="file-info" id="fileInfo">
+        <h3>文件信息：</h3>
+        <div id="fileName"></div>
+        <div id="fileSize"></div>
+        <div id="fileType"></div>
+        <div id="validationResult"></div>
+    </div>
+    
+    <button id="testBtn" disabled>测试上传</button>
+    <button id="clearBtn">清除文件</button>
+    
+    <script>
+        console.log('页面开始加载...');
+        
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const testBtn = document.getElementById('testBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        let selectedFile = null;
+        
+        // 创建隐藏的文件输入
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'audio/*';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+        
+        // 文件验证
+        function validateFile(file) {
+            const maxSize = 25 * 1024 * 1024; // 25MB
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/ogg', 'audio/m4a'];
+            const allowedExtensions = ['.mp3', '.wav', '.m4a', '.ogg'];
+            const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+            
+            let errors = [];
+            
+            if (file.size > maxSize) {
+                errors.push(`文件大小超过25MB限制 (当前: ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+            }
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                errors.push(`不支持的文件格式 (当前: ${file.type || fileExtension})`);
+            }
+            
+            return { isValid: errors.length === 0, errors: errors };
+        }
+        
+        // 显示文件信息
+        function showFileInfo(file) {
+            console.log('显示文件信息:', file.name);
+            const validation = validateFile(file);
+            
+            document.getElementById('fileName').textContent = `文件名: ${file.name}`;
+            document.getElementById('fileSize').textContent = `文件大小: ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+            document.getElementById('fileType').textContent = `文件类型: ${file.type || '未知'}`;
+            
+            const resultDiv = document.getElementById('validationResult');
+            if (validation.isValid) {
+                resultDiv.innerHTML = '<span style="color: green;">✅ 文件验证通过</span>';
+                fileInfo.className = 'file-info success';
+                testBtn.disabled = false;
+            } else {
+                resultDiv.innerHTML = '<span style="color: red;">❌ 文件验证失败: ' + validation.errors.join(', ') + '</span>';
+                fileInfo.className = 'file-info error';
+                testBtn.disabled = true;
+            }
+            
+            fileInfo.style.display = 'block';
+        }
+        
+        // 点击上传
+        uploadArea.addEventListener('click', () => {
+            console.log('点击上传区域');
+            fileInput.click();
+        });
+        
+        // 文件选择
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                showFileInfo(file);
+                console.log('文件已选择:', file.name);
+            }
+        });
+        
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+            console.log('拖拽悬停');
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            console.log('拖拽离开');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            console.log('文件拖拽放下');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                selectedFile = file;
+                showFileInfo(file);
+                console.log('拖拽文件已选择:', file.name);
+            }
+        });
+        
+        // 测试按钮
+        testBtn.addEventListener('click', () => {
+            if (selectedFile) {
+                alert('文件上传测试成功！\n\n文件信息:\n- 名称: ' + selectedFile.name + '\n- 大小: ' + (selectedFile.size / 1024 / 1024).toFixed(2) + 'MB\n- 类型: ' + selectedFile.type);
+            }
+        });
+        
+        // 清除按钮
+        clearBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            testBtn.disabled = true;
+            console.log('文件已清除');
+        });
+        
+        console.log('音频上传测试页面已加载完成');
+    </script>
+</body>
+</html>
+

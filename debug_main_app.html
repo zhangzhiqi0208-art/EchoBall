@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主应用调试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-info { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>主应用调试页面</h1>
+    
+    <div class="debug-info" id="debugInfo">
+        <h3>调试信息：</h3>
+        <div id="debugContent">正在检查...</div>
+    </div>
+    
+    <button onclick="checkElements()">检查元素</button>
+    <button onclick="testAudioUpload()">测试音频上传</button>
+    <button onclick="switchToAudio()">切换到录音原声</button>
+    <button onclick="checkEventListeners()">检查事件监听器</button>
+    
+    <script>
+        function checkElements() {
+            const debugContent = document.getElementById('debugContent');
+            let info = '<h4>元素检查结果：</h4>';
+            
+            // 检查关键元素
+            const elements = {
+                'audioUploadArea': document.getElementById('audioUploadArea'),
+                'audioFileInput': document.getElementById('audioFileInput'),
+                'audioInputContent': document.getElementById('audioInputContent'),
+                'originalSoundInputGroup': document.getElementById('originalSoundInputGroup'),
+                'languageSwitchCard': document.getElementById('languageSwitchCard')
+            };
+            
+            Object.keys(elements).forEach(key => {
+                const element = elements[key];
+                const status = element ? '✅ 存在' : '❌ 不存在';
+                info += `<div>${key}: ${status}</div>`;
+            });
+            
+            debugContent.innerHTML = info;
+        }
+        
+        function testAudioUpload() {
+            const audioUploadArea = document.getElementById('audioUploadArea');
+            const audioFileInput = document.getElementById('audioFileInput');
+            
+            if (audioUploadArea && audioFileInput) {
+                alert('音频上传元素存在！\n\n点击测试：' + (audioUploadArea.onclick ? '有事件' : '无事件'));
+                
+                // 测试点击事件
+                audioUploadArea.click();
+            } else {
+                alert('音频上传元素不存在！\n\n需要先切换到"录音原声"标签');
+            }
+        }
+        
+        function switchToAudio() {
+            // 模拟切换到录音原声
+            if (typeof OriginalSoundTemplate !== 'undefined') {
+                OriginalSoundTemplate.switchInputType('audio');
+                alert('已切换到录音原声标签');
+            } else {
+                alert('OriginalSoundTemplate 未定义！');
+            }
+        }
+        
+        function checkEventListeners() {
+            const audioUploadArea = document.getElementById('audioUploadArea');
+            const debugContent = document.getElementById('debugContent');
+            
+            if (audioUploadArea) {
+                let info = '<h4>事件监听器检查：</h4>';
+                info += `<div>元素存在: ✅</div>`;
+                info += `<div>点击事件: ${audioUploadArea.onclick ? '✅' : '❌'}</div>`;
+                info += `<div>拖拽事件: ${audioUploadArea.ondragover ? '✅' : '❌'}</div>`;
+                
+                // 检查是否有事件监听器
+                const hasClickListeners = audioUploadArea.addEventListener ? '✅' : '❌';
+                info += `<div>addEventListener支持: ${hasClickListeners}</div>`;
+                
+                debugContent.innerHTML = info;
+            } else {
+                debugContent.innerHTML = '<div style="color: red;">音频上传区域不存在！</div>';
+            }
+        }
+        
+        // 页面加载时自动检查
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkElements();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+

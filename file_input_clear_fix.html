@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件输入清空修复测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>文件输入清空修复测试</h1>
+    
+    <div class="test-section success">
+        <h3>✅ 问题已找到并修复！</h3>
+        <p>我发现了需要"点击文件-上传-再点击文件-上传"的根本原因：<strong>文件输入元素没有清空</strong></p>
+        <ul>
+            <li><strong>问题</strong>：文件输入元素的 <code>value</code> 没有被清空</li>
+            <li><strong>影响</strong>：重复选择同一文件时不会触发 <code>change</code> 事件</li>
+            <li><strong>结果</strong>：用户需要选择不同的文件才能触发上传</li>
+        </ul>
+    </div>
+    
+    <div class="test-section info">
+        <h3>🔧 修复内容：</h3>
+        <ul>
+            <li>在 <code>handleAudioFileUpload</code> 函数末尾添加 <code>event.target.value = ''</code></li>
+            <li>在 <code>handleExcelFileUpload</code> 函数末尾添加 <code>event.target.value = ''</code></li>
+            <li>移除了 <code>createAudioUploadCard</code> 中的重复 <code>initializeFileUpload</code> 调用</li>
+            <li>更新版本号到 v=20241228-017</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 问题分析：</h3>
+        <p><strong>修复前的问题流程：</strong></p>
+        <pre>
+1. 用户点击上传区域 → 打开文件选择对话框
+2. 用户选择文件A → change事件触发 → handleAudioFileUpload执行
+3. 用户再次点击上传区域 → 打开文件选择对话框
+4. 用户再次选择文件A → change事件不触发 (因为value没变)
+5. 用户必须选择不同的文件B → change事件才触发
+6. 用户再次选择文件A → change事件不触发
+7. 用户必须选择不同的文件C → change事件才触发
+        </pre>
+        
+        <p><strong>修复后的正确流程：</strong></p>
+        <pre>
+1. 用户点击上传区域 → 打开文件选择对话框
+2. 用户选择文件A → change事件触发 → handleAudioFileUpload执行 → value被清空
+3. 用户再次点击上传区域 → 打开文件选择对话框
+4. 用户再次选择文件A → change事件触发 (因为value被清空了)
+5. 用户可以选择任何文件，包括重复的文件
+        </pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 测试步骤：</h3>
+        <ol>
+            <li><strong>硬刷新页面</strong>：按 <code>Ctrl+Shift+R</code> 或 <code>Cmd+Shift+R</code></li>
+            <li>访问：<a href="http://localhost:3000/index.html" target="_blank">http://localhost:3000/index.html</a></li>
+            
+            <li><strong>测试音频上传</strong>：
+                <ul>
+                    <li>切换到"用户原声清洗模板" → "录音原声"</li>
+                    <li>点击音频上传区域 → 选择音频文件A</li>
+                    <li>再次点击音频上传区域 → 再次选择音频文件A</li>
+                    <li>应该能正常上传，不需要选择不同的文件</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试Excel上传</strong>：
+                <ul>
+                    <li>点击"Excel文件"标签</li>
+                    <li>点击Excel上传区域 → 选择Excel文件A</li>
+                    <li>再次点击Excel上传区域 → 再次选择Excel文件A</li>
+                    <li>应该能正常上传，不需要选择不同的文件</li>
+                </ul>
+            </li>
+            
+            <li><strong>测试拖拽上传</strong>：
+                <ul>
+                    <li>拖拽同一个文件多次到上传区域</li>
+                    <li>每次拖拽都应该能正常上传</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 预期控制台输出：</h3>
+        <p><strong>修复前（有问题）：</strong></p>
+        <pre>
+音频上传区域被点击
+触发音频文件选择
+音频文件被选择
+音频上传区域被点击
+触发音频文件选择
+(没有"音频文件被选择" - 因为选择了同一个文件)
+        </pre>
+        
+        <p><strong>修复后（正常）：</strong></p>
+        <pre>
+音频上传区域被点击
+触发音频文件选择
+音频文件被选择
+音频上传区域被点击
+触发音频文件选择
+音频文件被选择  ← 现在会触发，因为value被清空了
+        </pre>
+    </div>
+    
+    <div class="test-section success">
+        <h3>🎉 总结：</h3>
+        <p>现在音频和Excel上传应该：</p>
+        <ul>
+            <li>✅ 一次点击就打开文件选择对话框</li>
+            <li>✅ 一次拖拽就完成文件上传</li>
+            <li>✅ 可以重复选择同一个文件</li>
+            <li>✅ 不需要选择不同的文件才能触发上传</li>
+        </ul>
+    </div>
+    
+    <button onclick="window.open('http://localhost:3000/index.html', '_blank')">打开主应用</button>
+    <button onclick="location.reload(true)">刷新当前页面</button>
+    
+    <script>
+        console.log('文件输入清空修复测试页面已加载');
+        console.log('问题：文件输入元素的value没有被清空，导致重复选择同一文件时不触发change事件');
+        console.log('解决：在handleAudioFileUpload和handleExcelFileUpload函数末尾添加event.target.value = ""');
+    </script>
+</body>
+</html>
+
